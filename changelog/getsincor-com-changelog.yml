@@ -1,0 +1,48 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/OrderofChaos33/SINCOR2/blob/main/CHANGELOG.md
+raw: https://raw.githubusercontent.com/OrderofChaos33/SINCOR2/main/CHANGELOG.md
+checked: '2026-09-19'
+scheme: Keep a Changelog 1.0.0 (dated sections, no semantic release numbers)
+current_version: 'Unreleased (runtime); agent card 2.0.0; whitepaper 1.2 (July 2026); token list 1.1.1 (2026-08-30)'
+cadence: >-
+  The CHANGELOG itself is sparse — one dated entry plus an Unreleased block — while the repository is pushed
+  daily (pushed_at 2026-09-20T02:59Z) and carries dated operator briefs (docs/CEO_DAILY_BRIEF_2026-08-14 …
+  2026-09-19) and a dated friction log (docs/A2A_EXTERNAL_WIRE.md, 2026-09-10). The GitHub commit/PR stream
+  (e.g. PR #219 top-level protocolVersion on the card, PR #227 token canon lock, PR #231 TOA-first homepage
+  with public Agent Card discovery) is the de-facto changelog. No changelog page exists on getsincor.com
+  (/changelog 404).
+entries:
+  - version: Unreleased
+    date: null
+    breaking: false
+    additions:
+      - Root ARCHITECTURE.md with high-level system overview and data flow
+      - 'Expanded directory structure: verticals/, marketplace/, core/, dae/, docs/'
+      - Improved A2A compliance scaffolding and Agent Card support
+      - Security and CI workflow hardening (gitleaks, pip-audit, permissions)
+    changes:
+      - Updated README.md with clearer architecture references
+      - Refactored Flask runtime paths and Railway deployment configuration
+  - version: '2026-06-07'
+    date: '2026-06-07'
+    breaking: false
+    highlights:
+      - Large-scale addition of missing production-oriented components via Copilot-assisted development
+      - Initial population of vertical packs scaffolding (healthcare, dental, compliance, trading, lead_gen)
+related_dated_signals:
+  - date: '2026-09-19'
+    source: https://getsincor.com/.well-known/sinc-token.json
+    note: canon_lock_version 2026-09-19.1 — SINC price/contract canon locked across public token surfaces (PR #227).
+  - date: '2026-09-10'
+    source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md
+    note: 'External A2A probe log: card gained root protocolVersion/url/preferredTransport (#219); /docs/a2a stopped 404ing; quote accepts skill_id/skillId/skill.'
+  - date: '2026-08-30'
+    source: https://getsincor.com/tokenlists/sincor.tokenlist.json
+    note: Token list v1.1.1 timestamp.
+  - date: '2026-07'
+    source: https://getsincor.com/static/docs/SINCOR_whitepaper.md
+    note: Whitepaper v1.2; Morpho Blue integration section dated July 2026.
+  - date: '2026-06-28'
+    source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/REVERTING.md
+    note: 'Emergency revert to commit d727f35 removing a breaking merge (grok-solutions-june2026).'

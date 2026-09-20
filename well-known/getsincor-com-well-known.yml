@@ -1,0 +1,115 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live GET probes of the named /.well-known/* path list (plus /apis.json and /apis.yml) on getsincor.com,
+  2026-09-20 03:06-03:13 UTC, browser User-Agent. Every row below is a request that was actually issued;
+  every status is the one returned.
+summary:
+  hosts_probed: 1
+  hosts_unreachable: 4
+  paths_probed: 19
+  documents_served: 4
+  note: >-
+    getsincor.com is the ONLY host SINCOR has: www.getsincor.com, api.getsincor.com, docs.getsincor.com and
+    mcp.getsincor.com have no DNS records (curl exit 6), and there is no MCP server host to add because SINCOR
+    ships no MCP server (see mcp/). The host serves an A2A agent card at the canonical path AND the legacy
+    path, plus two non-standard JSON documents (trust-stack.json, sinc-token.json). It serves NO RFC 9116
+    security.txt, NO RFC 9727 api-catalog, NO OpenID/OAuth (RFC 8414 / RFC 9728) metadata, NO APIs.json,
+    NO ai-plugin.json, NO UCP/ACP/AAuth document. A WellKnown pointer is emitted because real documents are
+    served from /.well-known/; it does NOT assert an API catalog or a security.txt — both are absent.
+  false_positive_check: >-
+    Unknown /.well-known/* paths return a real 404 (text/html "404 - Page Not Found | SINCOR", 1,930 bytes),
+    so every 200 below is a genuine document, not an SPA shell.
+hosts:
+- host: getsincor.com
+  role: Public website, A2A agent host and the only host in the record
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json
+    file: ../a2a/getsincor-com-agent-card.json
+    standard: A2A 1.0 Agent Card (RFC 8615 canonical path)
+    note: Graded conformant in a2a/getsincor-com-a2a.yml.
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: application/json
+    file: getsincor-com-agent.json
+    standard: A2A pre-0.3 legacy card path
+    note: A different, older-shaped body than the canonical card (no protocolVersion, deprecated `authentication` block).
+  - path: /.well-known/trust-stack.json
+    status: 200
+    content_type: application/json
+    file: getsincor-com-trust-stack.json
+    standard: none (SINCOR-specific)
+    note: >-
+      Names the provider's canonical identity/reputation/settlement systems (kya_registry,
+      underwriting_score_engine, kya_erc8004, axm_x402, agent_passport_genesis_nft) and links
+      /docs/TRUST_STACK.md and the price API. Discovered because the open-source runtime ships it under
+      static/.well-known/; not a standard well-known name.
+  - path: /.well-known/sinc-token.json
+    status: 200
+    content_type: application/json
+    file: getsincor-com-sinc-token.json
+    standard: none (token metadata; referenced from the Uniswap-format token list at /tokenlists/sincor.tokenlist.json)
+    note: Token metadata for SINC on Base (chainId 8453) with social links and the official $0.15 price statement.
+  - path: /.well-known/security.txt
+    status: 404
+    standard: RFC 9116
+  - path: /.well-known/openid-configuration
+    status: 404
+    standard: OpenID Connect Discovery 1.0
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    standard: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    standard: RFC 9728
+  - path: /.well-known/api-catalog
+    status: 404
+    standard: RFC 9727
+  - path: /.well-known/api-catalog.json
+    status: 404
+    standard: RFC 9727 (non-canonical .json spelling)
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+    standard: draft-hardt-oauth-aauth-protocol
+  - path: /.well-known/apis.json
+    status: 404
+    standard: APIs.json
+  - path: /apis.json
+    status: 404
+    standard: APIs.json (primary location)
+  - path: /apis.yml
+    status: 404
+    standard: APIs.json (YAML serialization)
+  - path: /.well-known/mcp.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+    note: Not a well-known path; recorded here because it was probed in the same pass (see llms/).
+- host: www.getsincor.com
+  role: Not configured
+  unreachable: true
+  documents: []
+  note: No A/AAAA/CNAME record (curl exit 6, "Could not resolve host"). Nothing could be probed.
+- host: api.getsincor.com
+  role: Not configured
+  unreachable: true
+  documents: []
+  note: No DNS record.
+- host: docs.getsincor.com
+  role: Not configured
+  unreachable: true
+  documents: []
+  note: No DNS record.
+- host: mcp.getsincor.com
+  role: Not configured
+  unreachable: true
+  documents: []
+  note: No DNS record, and no MCP server is documented anywhere on the provider's surfaces.

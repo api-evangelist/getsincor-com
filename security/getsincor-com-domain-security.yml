@@ -1,0 +1,17 @@
+generated: '2026-09-19'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: getsincor.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 27 01:48:37 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+domains:
+- domain: getsincor.com
+  dnssec: true
+  caa:
+  - nsq4j3eh.up.railway.app.
+  spf: true
+  dmarc: false

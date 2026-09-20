@@ -1,0 +1,125 @@
+generated: '2026-09-19'
+method: searched
+source: https://getsincor.com/.well-known/agent-card.json
+derived_from: null   # no OpenAPI exists
+docs:
+  - https://getsincor.com/docs/a2a
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+  - https://getsincor.com/static/docs/SINCOR_whitepaper.md
+checked: '2026-09-19'
+sector: AI agent infrastructure / agent-to-agent commerce on Base
+summary: >-
+  SINCOR's conformance profile is the agent-commerce protocol stack, not an enterprise or sector standard:
+  an A2A 1.0.1 agent card (graded conformant), JSON-RPC 2.0 at POST /api/a2a with SSE for message/stream and
+  tasks/resubscribe, settlement in AXM on Base (chain 8453) declared as an x402 payment method on the card
+  but executed as pay-then-reference-txHash, a Uniswap-format token list, and ERC-8004 agent identity
+  described as an operator step (registration on chain not verified here). It declares no OAuth/OIDC,
+  no RFC 9457 problem details, no RFC 9116 security.txt, no RFC 9727 API catalog, no RFC 8594 sunset
+  signalling, and publishes no compliance certifications (SOC 2 / ISO 27001 / HIPAA) despite marketing
+  "HIPAA guardrails" for its healthcare vertical — so no Compliance pointer is emitted.
+standards:
+- id: a2a
+  name: Agent2Agent protocol
+  version: '1.0.1'
+  conforms: true
+  evidence: >-
+    a2a/getsincor-com-agent-card.json — protocolVersion "1.0.1" at the root and in supportedInterfaces[0],
+    url https://getsincor.com/api/a2a, preferredTransport JSONRPC, capabilities object, skills[] of 16 each with
+    id/name/description/tags/examples/inputModes/outputModes; POST https://getsincor.com/api/a2a answered
+    tasks/list with {"tasks": []} and tasks/get with a JSON-RPC error. Graded conformant in a2a/getsincor-com-a2a.yml.
+  domain_standard_signature: true
+  note: >-
+    For an agent-commerce provider the A2A Agent Card IS the domain-standard contract; the card is served at
+    the RFC 8615 canonical path and registered with a2aregistry.org. Deviations (no securitySchemes, generic
+    -32602 instead of -32001 TaskNotFound, unnamespaced vendor fields) are recorded in the A2A manifest.
+- id: json-rpc-2.0
+  name: JSON-RPC 2.0
+  conforms: true
+  verification: partial
+  evidence: >-
+    Every response observed carries {"jsonrpc":"2.0","id":…} with standard -32601 Method not found and -32602
+    Invalid params codes. Deviation: -32601 responses arrive with HTTP 404 and a malformed body returns
+    -32601 "Method '' not found" with id null (JSON-RPC prescribes -32700 Parse error).
+- id: sse
+  name: Server-Sent Events (WHATWG)
+  conforms: true
+  evidence: >-
+    /docs/a2a lists message/stream and tasks/resubscribe; docs/api/README.md says "Streaming methods use
+    Server-Sent Events with text/event-stream responses"; GET https://getsincor.com/v1/a2a/stream?tags=x returned
+    200 text/event-stream; charset=utf-8 with cache-control: no-cache on 2026-09-20.
+- id: x402
+  name: x402 HTTP payment protocol
+  conforms: declared
+  verification: none
+  evidence: >-
+    a2a/getsincor-com-agent-card.json paymentMethods[0].scheme = "x402" (network base, chainId 8453,
+    acceptedTokens [AXM, USDC, SINC], payTo 0x09E2…12Ac); baseCommerce.x402.enabled = true with skillIds[];
+    agentKit.actionProviders[] includes {id: x402, network: base-mainnet}; the whitepaper roadmap lists
+    "x402 micropayments for API resources" as a FUTURE item (item 4).
+  domain_standard_signature: true
+  note: >-
+    The contract declares x402, which is the signature this check reads. But the settlement the quote
+    endpoint instructs is "Pay N AXM to pay_to on Base, then include txHash in your tasks/send request" —
+    a pre-payment rail, not a 402 PAYMENT-REQUIRED challenge — and no HTTP 402 was observed on any probe.
+    Declared, not verified; the provider's own roadmap agrees it is not finished.
+- id: erc-8004
+  name: ERC-8004 Trustless Agents (identity registry on Base)
+  conforms: declared
+  verification: none
+  evidence: >-
+    https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/ERC8004_REGISTER.md names registry
+    0x8004A169FB4a3325136EB29fA0ceB6D2e539a432 and agent URI https://getsincor.com/.well-known/agent-card.json;
+    docs/UNDERWRITING.md says "Identity is ERC-8004"; /.well-known/trust-stack.json names credentials
+    "kya_erc8004". The card carries no erc8004_id field (the doc's own post-registration step 1), so the
+    registration had not been reflected on the card as of 2026-09-20 and was not verified on chain here.
+- id: caip-2
+  name: CAIP-2 chain identifier
+  conforms: false
+  evidence: 'The card and quotes use numeric chainId 8453 / chain_id 8453 and the string "base"; no eip155:8453 identifier appears on any surface.'
+- id: uniswap-token-list
+  name: Uniswap Token Lists schema
+  conforms: true
+  evidence: 'https://getsincor.com/tokenlists/sincor.tokenlist.json — name, timestamp, version {major,minor,patch}, tokens[] with chainId/address/name/symbol/decimals/logoURI/tags/extensions (v1.1.1, 2026-08-30).'
+  note: Token-side, not API-side; recorded because it is a real machine-readable standard the provider conforms to.
+- id: keep-a-changelog
+  name: Keep a Changelog 1.0.0
+  conforms: true
+  evidence: 'https://github.com/OrderofChaos33/SINCOR2/blob/main/CHANGELOG.md declares the format and uses Unreleased / Added / Changed sections.'
+- id: oauth2
+  conforms: false
+  evidence: No OAuth flows on any surface; /.well-known/oauth-authorization-server and oauth-protected-resource 404.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration 404; /auth/google exists (500 on GET) as a consumer sign-in button, not an API identity layer.
+- id: rfc9457
+  name: Problem Details for HTTP APIs
+  conforms: false
+  evidence: 'REST errors use a custom {status, code, message, details, request_id} envelope (docs/api/README.md); JSON-RPC errors use the JSON-RPC error object. No application/problem+json.'
+- id: rfc9116
+  name: security.txt
+  conforms: false
+  evidence: https://getsincor.com/.well-known/security.txt → 404. A SECURITY.md exists in the GitHub repository instead (see security/).
+- id: rfc9727
+  name: api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog → 404.
+- id: rfc8594
+  name: Sunset header / deprecation signalling
+  conforms: false
+  evidence: No Sunset or Deprecation header observed; the legacy /.well-known/agent.json is kept live as an alias with no deprecation signal.
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI/Swagger document on getsincor.com (/openapi.json, /api/openapi.json, /swagger.json, /api/docs,
+    /redoc and variants all 404) and none in the 1,268-file open-source repository tree. docs/UNDERWRITING.md
+    says "Wire (do not invent REST)".
+- id: mcp
+  conforms: false
+  evidence: '/mcp → 404 HTML, /api/mcp → 404 JSON; the only MCP mention (docs/LOOP_SETTLEMENT.md announce_task/submit_bid/verify_proof) describes a Base Sepolia console tape, not a hosted server.'
+compliance_programs:
+  published: false
+  note: >-
+    No SOC 2, ISO 27001, HIPAA, PCI or FedRAMP attestation, trust center or audit report is published. The
+    whitepaper markets "HIPAA guardrails" and "Compliance RPA" as verticals and CertiK Skynet 97/100 for the
+    SINC token contract (a smart-contract security score, not an organisational compliance program).
+    No Compliance pointer is emitted.

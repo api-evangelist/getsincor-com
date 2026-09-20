@@ -1,18 +1,82 @@
 aid: getsincor-com
 name: SINCOR
-description: 'SINCOR is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  SINCOR operates an autonomous AI "agent swarm" on Base mainnet that sells sixteen skills — lead
+  enrichment, competitor intelligence, outbound sequences, healthcare credential checks, dental billing
+  scrubs, compliance SBOMs, market forecasts, deal scoring, content, cash-flow recovery, local-business
+  site building, TOA strategic decisions, contract negotiation, quality audits, agent lifecycle and AXIOM
+  payment verification — to other agents over the A2A protocol (1.0.1, JSON-RPC 2.0 at
+  https://getsincor.com/api/a2a). Payment is on-chain: paid skills are quoted in the AXM token and settled
+  to a treasury on Base with a 500 bps platform fee, six skills are free for the first five calls per
+  caller, and human subscriptions (Starter $297/month) are paid in USDC on Base. The machine-readable
+  contract is the A2A Agent Card at /.well-known/agent-card.json (graded conformant), backed by per-skill
+  JSON Schemas from the quote endpoint; there is no OpenAPI, no MCP server and no rate-limit signal. The
+  runtime is open source (MIT) at github.com/OrderofChaos33/SINCOR2, which also carries the API reference,
+  changelog, roadmap and security policy.
+image: https://getsincor.com/static/sincor_og.jpg
 url: https://raw.githubusercontent.com/api-evangelist/getsincor-com/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: >-
+  Full local enrichment pass 2026-09-19 (was: stub / harvest:a2a-registry). Live A2A 1.0.1 agent card
+  (graded conformant) with 16 skills and per-skill JSON Schemas, JSON-RPC endpoint answering, open-source
+  runtime with API reference; no OpenAPI, no MCP server.
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
 - Company
-apis: []
+- AI Agents
+- A2A
+- Agentic Commerce
+- Agentic Payments
+- x402
+- Base
+- Crypto
+- Lead Generation
+- Healthcare
+- Compliance
+- Market Intelligence
+- agent-native
+apis:
+- name: SINCOR Agent Swarm A2A API
+  description: >-
+    A2A 1.0.1 agent surface over JSON-RPC 2.0 exposing sixteen skills. Discover via the agent card, quote a
+    skill (price, fee split, free-quota state, input/output JSON Schema) without side effects, then
+    message/send with the skill id — anonymously for the free quota, or with the txHash of an AXM transfer
+    to the treasury for paid skills — and poll tasks/get. message/stream and tasks/resubscribe stream over
+    SSE; tasks/cancel exists with no documented window or refund.
+  humanURL: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+  baseURL: https://getsincor.com/api/a2a
+  tags:
+  - A2A
+  - AI Agents
+  - Agentic Payments
+  - JSON-RPC
+  properties:
+  - type: AgentCard
+    url: a2a/getsincor-com-a2a.yml
+  - type: AgentCard
+    url: https://getsincor.com/.well-known/agent-card.json
+  - type: Documentation
+    url: https://getsincor.com/docs/a2a
+  - type: APIReference
+    url: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+  - type: GettingStarted
+    url: https://github.com/OrderofChaos33/SINCOR2/blob/main/examples/a2a_external_caller.py
+  - type: Documentation
+    url: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md
+  - type: X-SkillSchemas
+    url: a2a/getsincor-com-skill-quotes.json
+  - type: X-A2ASkillCatalog
+    url: https://getsincor.com/api/a2a/agents
+  - type: X-A2AQuote
+    url: https://getsincor.com/api/a2a/quote?skill_id=toa-decision
+  - type: X-MCPServerCandidate
+    url: mcp/getsincor-com-mcp.yml
+  - type: X-Health
+    url: https://getsincor.com/health
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +85,73 @@ maintainers:
 common:
 - type: Website
   url: https://getsincor.com/
+- type: AgentCard
+  url: a2a/getsincor-com-a2a.yml
+- type: WellKnown
+  url: well-known/getsincor-com-well-known.yml
+- type: Authentication
+  url: authentication/getsincor-com-authentication.yml
+- type: Conventions
+  url: conventions/getsincor-com-conventions.yml
+- type: ErrorCatalog
+  url: errors/getsincor-com-problem-types.yml
+- type: Conformance
+  url: conformance/getsincor-com-conformance.yml
+- type: Lifecycle
+  url: lifecycle/getsincor-com-lifecycle.yml
+- type: ChangeLog
+  url: changelog/getsincor-com-changelog.yml
+- type: ChangeLog
+  url: https://github.com/OrderofChaos33/SINCOR2/blob/main/CHANGELOG.md
+- type: Roadmap
+  url: https://github.com/OrderofChaos33/SINCOR2/blob/main/ROADMAP.md
+- type: Plans
+  url: plans/getsincor-com-plans-pricing.yml
+- type: Pricing
+  url: https://getsincor.com/buy
+- type: RateLimits
+  url: rate-limits/getsincor-com-rate-limits.yml
+- type: Sandbox
+  url: sandbox/getsincor-com-sandbox.yml
+- type: Packages
+  url: packages/getsincor-com-packages.yml
+- type: SDKs
+  url: packages/getsincor-com-packages.yml
+- type: SourceCode
+  url: https://github.com/OrderofChaos33/SINCOR2
+- type: GitHubOrganization
+  url: https://github.com/OrderofChaos33
+- type: Security
+  url: https://github.com/OrderofChaos33/SINCOR2/blob/main/SECURITY.md
+- type: VulnerabilityDisclosure
+  url: security/getsincor-com-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/getsincor-com-domain-security.yml
+- type: RegulatoryPosture
+  url: regulatory/getsincor-com-regulatory-posture.yml
+- type: LLMsTxt
+  url: llms/getsincor-com-llms.txt
+- type: SignUp
+  url: https://getsincor.com/signup
+- type: Whitepaper
+  url: https://getsincor.com/static/docs/SINCOR_whitepaper.md
+- type: Community
+  url: https://t.me/getsincor
+- type: Discord
+  url: https://discord.gg/getsincor
+- type: X-TokenList
+  url: https://getsincor.com/tokenlists/sincor.tokenlist.json
+x-pointer-verification:
+  checked: '2026-09-19'
+  note: >-
+    Every common[] and properties[] URL above was fetched on 2026-09-20 UTC and returned 200 (GitHub blob
+    pages 200; discord.gg 301 → discord.com/invite/getsincor 200; t.me 200). Deliberately NOT emitted because
+    they are dead on the provider's own site: TermsOfService (/terms 404), PrivacyPolicy (/privacy 404),
+    Login (/login 404), Support pages (/contact, /support 404), Blog (/blog 404), StatusPage (/status 404),
+    Pricing page (/pricing 404 — /buy is the live checkout and is used instead), and the legacy card's
+    key-issuance page (/api-keys 404). x.com/getsincor answered 404 to a non-browser client and is unverified.
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 23
+  pass: local-v3

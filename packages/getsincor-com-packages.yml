@@ -1,0 +1,63 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/OrderofChaos33/SINCOR2/tree/main/sdk
+checked: '2026-09-19'
+registries_searched:
+  - 'https://registry.npmjs.org/-/v1/search?text=sincor → 0 packages; registry.npmjs.org/sincor-a2a, /@sincor/a2a, /sincor → 404'
+  - 'https://pypi.org/pypi/sincor-a2a/json, sincor_a2a, sincor, sincor2, getsincor → 404'
+  - 'Maven Central, NuGet, pkg.go.dev, RubyGems, Packagist, crates.io — no first-party artifact (no evidence of any on the provider''s surfaces)'
+summary: >-
+  SINCOR ships two first-party client libraries as SOURCE in its open-source runtime repository — a Python
+  package (sincor-a2a 0.1.0, zero dependencies, "Plug-and-play SINCOR A2A client for CrewAI, LangChain,
+  AutoGen") and a TypeScript client (sincor-a2a 0.1.0) — and publishes NEITHER to a registry. The provider's
+  own install instructions are a git URL ("Install (GitHub — no PyPI token required)"). Both wrap the WORKER
+  side of the fabric (register, heartbeat, bid, submit_proof, listen on /v1/a2a/stream), not the buyer side;
+  the buyer-side reference is a standalone script (examples/a2a_external_caller.py). version is read from
+  pyproject.toml / package.json; `published: null` because there is no registry release to date.
+packages:
+  - language: python
+    registry: none
+    distribution: git
+    name: sincor-a2a
+    url: https://github.com/OrderofChaos33/SINCOR2/tree/main/sdk/python
+    install: 'pip install "sincor-a2a @ git+https://github.com/OrderofChaos33/SINCOR2.git#subdirectory=sdk/python"'
+    official: true
+    version: '0.1.0'
+    published: null
+    version_source: https://raw.githubusercontent.com/OrderofChaos33/SINCOR2/main/sdk/python/pyproject.toml
+    requires_python: '>=3.10'
+    dependencies: []
+    license: MIT (repository)
+    surface: [register, heartbeat, bid, submit_proof, listen (SSE /v1/a2a/stream)]
+    note: >-
+      Not on PyPI (404 on 2026-09-20). register() signs the payload with HMAC-SHA256 using a default secret
+      string baked into the module — a demo credential, not a production one. Repository last pushed
+      2026-09-20, so the source is current even though no release is cut.
+  - language: typescript
+    registry: none
+    distribution: git
+    name: sincor-a2a
+    url: https://github.com/OrderofChaos33/SINCOR2/tree/main/sdk/typescript/sincor-a2a
+    install: 'npm install git+https://github.com/OrderofChaos33/SINCOR2.git   # or copy sdk/typescript/sincor-a2a'
+    official: true
+    version: '0.1.0'
+    published: null
+    version_source: https://raw.githubusercontent.com/OrderofChaos33/SINCOR2/main/sdk/typescript/sincor-a2a/package.json
+    license: MIT
+    surface: [register, heartbeat, bid, submitProof, listen (EventSource /v1/a2a/stream)]
+    note: >-
+      Not on npm (404). main points at src/index.ts (no build); register() fetches a signature from
+      POST /api/v1/sign, which returned 404 on getsincor.com on 2026-09-20, so the TypeScript register flow
+      does not work against production as shipped.
+  - language: python
+    registry: none
+    distribution: script
+    name: a2a_external_caller.py
+    url: https://github.com/OrderofChaos33/SINCOR2/blob/main/examples/a2a_external_caller.py
+    install: 'python examples/a2a_external_caller.py --base https://getsincor.com --skill lead-enrichment --simulate'
+    official: true
+    version: null
+    published: null
+    surface: [discover, quote, submit_task (message/send with tasks/send fallback), get_task, poll]
+    note: 'The buyer-side reference client (stdlib only). Not a package; recorded because it is the only first-party code that calls the surface an external agent would call.'
+sdk_count_official: 2

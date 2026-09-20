@@ -1,0 +1,1142 @@
+{
+  "x-provenance": {
+    "generated": "2026-09-19",
+    "method": "probed",
+    "source": "GET https://getsincor.com/api/a2a/quote?skill_id=<skill> for each of the 16 skill ids the agent card declares",
+    "fetched": "2026-09-20T03:12Z",
+    "note": "Each value is the verbatim JSON body the quote endpoint returned (HTTP 200, application/json). The input_schema/output_schema objects are the only machine-readable per-skill contract SINCOR publishes; free_quota_remaining and the AXM prices are live values at fetch time and change per caller/quota state."
+  },
+  "quotes": {
+    "agent-lifecycle": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "1.0000 AXM",
+      "axm_price_wei": "1000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 10,
+      "free_quota_remaining": 0,
+      "input_schema": {},
+      "is_free": false,
+      "note": "AXM-only. Pay 1.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {},
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "50000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "agent-lifecycle",
+      "skill_name": "Agent Lifecycle Management",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0500 AXM",
+        "platform_fee_wei": "50000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "axiom-payment": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "1.0000 AXM",
+      "axm_price_wei": "1000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 5,
+      "free_quota_remaining": 0,
+      "input_schema": {},
+      "is_free": false,
+      "note": "AXM-only. Pay 1.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {},
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "50000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "axiom-payment",
+      "skill_name": "AXIOM Micropayment Verification",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0500 AXM",
+        "platform_fee_wei": "50000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "cashflow-recovery": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "3.5000 AXM",
+      "axm_price_wei": "3500000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 30,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "escalation_threshold_days": {
+            "default": 30,
+            "type": "integer"
+          },
+          "invoices": {
+            "items": {
+              "properties": {
+                "amount": {
+                  "type": "number"
+                },
+                "debtor_email": {
+                  "type": "string"
+                },
+                "debtor_name": {
+                  "type": "string"
+                },
+                "due_date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "invoice_id": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "invoices"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 3.5000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "overdue_invoices": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "recovery_sequences": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "total_recoverable": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "175000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "cashflow-recovery",
+      "skill_name": "Cash-Flow Recovery & Invoice Management",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.1750 AXM",
+        "platform_fee_wei": "175000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "competitor-intel": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "FREE",
+      "axm_price_wei": "0",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 25,
+      "free_quota_remaining": 5,
+      "input_schema": {
+        "properties": {
+          "depth": {
+            "description": "quick=top-5 summary, detailed=full SWOT",
+            "enum": [
+              "quick",
+              "detailed"
+            ],
+            "type": "string"
+          },
+          "market": {
+            "description": "Market / industry vertical",
+            "type": "string"
+          },
+          "target": {
+            "description": "Company or product to analyse",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target"
+        ],
+        "type": "object"
+      },
+      "is_free": true,
+      "note": "FREE \u2014 include caller_id in your tasks/send request (no txHash needed).",
+      "output_schema": {
+        "properties": {
+          "competitors": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "swot": {
+            "properties": {
+              "opportunities": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "strengths": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "threats": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "weaknesses": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "0",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "competitor-intel",
+      "skill_name": "Competitor Intelligence & SWOT",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0000 AXM",
+        "platform_fee_wei": "0",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "compliance-sbom": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "5.0000 AXM",
+      "axm_price_wei": "5000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 60,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "artifacts": {
+            "description": "Dependency manifests to scan",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "format": {
+            "description": "SBOM output format",
+            "enum": [
+              "spdx",
+              "cyclonedx"
+            ],
+            "type": "string"
+          },
+          "regulation": {
+            "description": "Applicable regulation (e.g. FDA-SaMD, HIPAA, SOC2)",
+            "type": "string"
+          },
+          "repository": {
+            "description": "GitHub owner/repo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repository"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 5.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "compliance_score": {
+            "type": "number"
+          },
+          "filing_artefact": {
+            "type": "string"
+          },
+          "licence_issues": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "sbom": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "250000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "compliance-sbom",
+      "skill_name": "Compliance SBOM & Regulatory Filing",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.2500 AXM",
+        "platform_fee_wei": "250000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "content-blog": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "FREE",
+      "axm_price_wei": "0",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 25,
+      "free_quota_remaining": 5,
+      "input_schema": {
+        "properties": {
+          "audience": {
+            "type": "string"
+          },
+          "length_words": {
+            "maximum": 5000,
+            "minimum": 200,
+            "type": "integer"
+          },
+          "seo_keywords": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tone": {
+            "enum": [
+              "professional",
+              "casual",
+              "technical"
+            ],
+            "type": "string"
+          },
+          "topic": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic"
+        ],
+        "type": "object"
+      },
+      "is_free": true,
+      "note": "FREE \u2014 include caller_id in your tasks/send request (no txHash needed).",
+      "output_schema": {
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "meta_description": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "word_count": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "0",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "content-blog",
+      "skill_name": "Content & Blog Post Generation",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0000 AXM",
+        "platform_fee_wei": "0",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "contract-negotiation": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "3.0000 AXM",
+      "axm_price_wei": "3000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 30,
+      "free_quota_remaining": 0,
+      "input_schema": {},
+      "is_free": false,
+      "note": "AXM-only. Pay 3.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {},
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "150000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "contract-negotiation",
+      "skill_name": "Contract Negotiation Support",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.1500 AXM",
+        "platform_fee_wei": "150000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "deal-scoring": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "2.5000 AXM",
+      "axm_price_wei": "2500000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 20,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "deals": {
+            "items": {
+              "properties": {
+                "company": {
+                  "type": "string"
+                },
+                "deal_id": {
+                  "type": "string"
+                },
+                "last_activity": {
+                  "type": "string"
+                },
+                "stage": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "target_quota": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "deals"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 2.5000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "scored_deals": {
+            "items": {
+              "properties": {
+                "close_probability": {
+                  "type": "number"
+                },
+                "deal_id": {
+                  "type": "string"
+                },
+                "next_action": {
+                  "type": "string"
+                },
+                "priority_rank": {
+                  "type": "integer"
+                },
+                "score": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "125000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "deal-scoring",
+      "skill_name": "Deal Scoring & Pipeline Prioritisation",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.1250 AXM",
+        "platform_fee_wei": "125000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "dental-billing-scrub": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "3.5000 AXM",
+      "axm_price_wei": "3500000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 40,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "claims": {
+            "items": {
+              "properties": {
+                "attachments": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "cdt_codes": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "claim_id": {
+                  "type": "string"
+                },
+                "payer_id": {
+                  "type": "string"
+                },
+                "provider_npi": {
+                  "type": "string"
+                },
+                "tooth_number": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "claims"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 3.5000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "clean_claims": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "flagged_claims": {
+            "items": {
+              "properties": {
+                "claim_id": {
+                  "type": "string"
+                },
+                "issues": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "suggested_fix": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "175000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "dental-billing-scrub",
+      "skill_name": "Dental Billing Scrub & Claims Cleanup",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.1750 AXM",
+        "platform_fee_wei": "175000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "healthcare-credential-check": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "4.0000 AXM",
+      "axm_price_wei": "4000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 45,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "payer_ids": {
+            "description": "Payer IDs to check credentialing for",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "provider_name": {
+            "type": "string"
+          },
+          "provider_npi": {
+            "description": "10-digit NPI",
+            "type": "string"
+          },
+          "state": {
+            "description": "2-letter US state code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider_npi"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 4.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "dea_active": {
+            "type": "boolean"
+          },
+          "licence_status": {
+            "type": "string"
+          },
+          "npi_valid": {
+            "type": "boolean"
+          },
+          "payer_credentialing": {
+            "items": {
+              "properties": {
+                "payer_id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "specialty": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "200000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "healthcare-credential-check",
+      "skill_name": "Healthcare Provider Credential Check",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.2000 AXM",
+        "platform_fee_wei": "200000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "lead-enrichment": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "FREE",
+      "axm_price_wei": "0",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 30,
+      "free_quota_remaining": 5,
+      "input_schema": {
+        "properties": {
+          "company": {
+            "description": "Company name or domain",
+            "type": "string"
+          },
+          "enrichment_fields": {
+            "description": "Fields to enrich: email, linkedin, revenue, headcount, \u2026",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "segment": {
+            "description": "Target ICP segment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "company"
+        ],
+        "type": "object"
+      },
+      "is_free": true,
+      "note": "FREE \u2014 include caller_id in your tasks/send request (no txHash needed).",
+      "output_schema": {
+        "properties": {
+          "leads": {
+            "items": {
+              "properties": {
+                "company": {
+                  "type": "string"
+                },
+                "contact_name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "fit_score": {
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "outreach_draft": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "0",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "lead-enrichment",
+      "skill_name": "Lead Enrichment & Outbound Prospecting",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0000 AXM",
+        "platform_fee_wei": "0",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "local-business-site-builder": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "5.0000 AXM",
+      "axm_price_wei": "5000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 60,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "business_name": {
+            "description": "For single-business mode",
+            "type": "string"
+          },
+          "category": {
+            "description": "Business type (e.g. dental, plumbing)",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Max businesses to process",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "location": {
+            "description": "City, state or ZIP code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 5.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "businesses": {
+            "items": {
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "site_scaffold": {
+                  "description": "HTML/Markdown site template",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "250000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "local-business-site-builder",
+      "skill_name": "Local Business Site Builder",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.2500 AXM",
+        "platform_fee_wei": "250000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "market-forecast": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "FREE",
+      "axm_price_wei": "0",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 35,
+      "free_quota_remaining": 5,
+      "input_schema": {
+        "properties": {
+          "data": {
+            "description": "Historical data points (optional)",
+            "type": "object"
+          },
+          "horizon": {
+            "description": "Time horizon (e.g. 30d, 1y)",
+            "type": "string"
+          },
+          "scenarios": {
+            "description": "Named scenarios to model",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "subject": {
+            "description": "What to forecast",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject"
+        ],
+        "type": "object"
+      },
+      "is_free": true,
+      "note": "FREE \u2014 include caller_id in your tasks/send request (no txHash needed).",
+      "output_schema": {
+        "properties": {
+          "confidence_interval": {
+            "type": "object"
+          },
+          "forecast": {
+            "type": "object"
+          },
+          "scenarios": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "0",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "market-forecast",
+      "skill_name": "Market Forecast & Scenario Planning",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0000 AXM",
+        "platform_fee_wei": "0",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "outreach-sequence": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "FREE",
+      "axm_price_wei": "0",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 20,
+      "free_quota_remaining": 5,
+      "input_schema": {
+        "properties": {
+          "channels": {
+            "items": {
+              "enum": [
+                "email",
+                "linkedin",
+                "sms"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "icp": {
+            "description": "Ideal customer profile",
+            "type": "string"
+          },
+          "offer": {
+            "description": "Value proposition to communicate",
+            "type": "string"
+          },
+          "touches": {
+            "description": "Number of sequence steps",
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "icp",
+          "offer"
+        ],
+        "type": "object"
+      },
+      "is_free": true,
+      "note": "FREE \u2014 include caller_id in your tasks/send request (no txHash needed).",
+      "output_schema": {
+        "properties": {
+          "sequence": {
+            "items": {
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "channel": {
+                  "type": "string"
+                },
+                "delay_days": {
+                  "type": "integer"
+                },
+                "step": {
+                  "type": "integer"
+                },
+                "subject": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "0",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "outreach-sequence",
+      "skill_name": "Outreach Sequence Builder",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.0000 AXM",
+        "platform_fee_wei": "0",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "quality-audit": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "2.0000 AXM",
+      "axm_price_wei": "2000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 20,
+      "free_quota_remaining": 0,
+      "input_schema": {},
+      "is_free": false,
+      "note": "AXM-only. Pay 2.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {},
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "100000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "quality-audit",
+      "skill_name": "Quality Audit & QA Review",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.1000 AXM",
+        "platform_fee_wei": "100000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    },
+    "toa-decision": {
+      "axiom_contract": "0x4c3fb66f14fbaa2088c9ae91017ba770da53715a",
+      "axm_price_display": "6.0000 AXM",
+      "axm_price_wei": "6000000000000000000",
+      "chain_id": 8453,
+      "estimated_latency_seconds": 45,
+      "free_quota_remaining": 0,
+      "input_schema": {
+        "properties": {
+          "context": {
+            "description": "Additional business context for the simulation",
+            "type": "string"
+          },
+          "horizon_days": {
+            "default": 90,
+            "type": "integer"
+          },
+          "options": {
+            "items": {
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "estimated_cost": {
+                  "type": "number"
+                },
+                "estimated_revenue_impact": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "options"
+        ],
+        "type": "object"
+      },
+      "is_free": false,
+      "note": "AXM-only. Pay 6.0000 AXM to pay_to on Base (chain 8453), then include txHash in your tasks/send request. Platform fee 500 bps routes to treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac.",
+      "output_schema": {
+        "properties": {
+          "ranked_options": {
+            "items": {
+              "properties": {
+                "confidence": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "rationale": {
+                  "type": "string"
+                },
+                "utility_score": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "recommended_action": {
+            "type": "string"
+          },
+          "simulation_summary": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pay_to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac",
+      "platform_fee_bps": 500,
+      "platform_fee_wei": "300000000000000000",
+      "primary_token": "AXIOM",
+      "reputation_floor": 0,
+      "sinc_amount": 0,
+      "sinc_contract": "0xe1D836087F6573b665d25CE088793E916D7892f8",
+      "skill_id": "toa-decision",
+      "skill_name": "TOA Strategic Decision & Routing",
+      "treasury_fee_split": {
+        "asset": "AXM",
+        "platform_fee_bps": 500,
+        "platform_fee_display": "0.3000 AXM",
+        "platform_fee_wei": "300000000000000000",
+        "to": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac"
+      }
+    }
+  }
+}

@@ -1,0 +1,708 @@
+generated: '2026-09-19'
+method: derived
+status: candidate
+source: a2a/getsincor-com-agent-card.json + a2a/getsincor-com-skill-quotes.json (live per-skill input/output JSON
+  Schemas) + https://getsincor.com/docs/a2a
+checked: '2026-09-19'
+search:
+  result: no MCP server exists
+  probes:
+  - url: https://getsincor.com/mcp
+    method: POST tools/list
+    http_status: 404
+    body: text/html 404 page
+  - url: https://getsincor.com/api/mcp
+    method: POST tools/list
+    http_status: 404
+    body: '{"error":"Not found","status":404}'
+  - url: https://getsincor.com/.well-known/mcp.json
+    http_status: 404
+  - url: https://mcp.getsincor.com/
+    http_status: 0
+    note: no DNS record
+  docs: 'No MCP server is documented on getsincor.com or in the SINCOR2 repository. The only MCP mention (docs/LOOP_SETTLEMENT.md:
+    announce_task / submit_bid / verify_proof) describes a Base Sepolia console tape between the provider''s own
+    agents, not a hosted server a client can connect to. npm/PyPI carry no sincor MCP package.'
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: derived
+  note: Nobody ships a server. This manifest is a CANDIDATE tool list an MCP wrapper could expose over the live
+    A2A surface; pointer type is X-MCPServerCandidate, never MCPServer.
+server:
+  name: getsincor-com (candidate)
+  transport: none
+  url: null
+  backing_surface:
+    protocol: A2A 1.0.1 JSON-RPC
+    endpoint: https://getsincor.com/api/a2a
+    quote: https://getsincor.com/api/a2a/quote?skill_id=<skill>
+    auth: anonymous free quota, then AXM payment on Base referenced by txHash (see authentication/)
+derivation_note: One tool per A2A skill. inputSchema/outputSchema are the provider's OWN published JSON Schemas
+  from the quote endpoint (saved verbatim in a2a/getsincor-com-skill-quotes.json), not invented; four skills (agent-lifecycle,
+  axiom-payment, contract-negotiation, quality-audit) publish empty schemas and are recorded as such. Prices are
+  live values at fetch time.
+tools:
+- name: agent_lifecycle
+  a2a_skill: agent-lifecycle
+  description: Onboard, promote, demote, or retire SINCOR agents via the Caretaker archetype.  Useful for orchestrators
+    managing multi-agent pipelines.
+  inputSchema:
+    type: object
+    properties: {}
+    note: quote endpoint published an empty input_schema for this skill
+  price:
+    axm: 1.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 10
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=agent-lifecycle; schema from GET /api/a2a/quote?skill_id=agent-lifecycle
+- name: axiom_payment
+  a2a_skill: axiom-payment
+  description: Verify that an AXM payment transaction has confirmed on Base, and unlock the associated task or resource.  Implements
+    the x402 flow.
+  inputSchema:
+    type: object
+    properties: {}
+    note: quote endpoint published an empty input_schema for this skill
+  price:
+    axm: 1.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 5
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=axiom-payment; schema from GET /api/a2a/quote?skill_id=axiom-payment
+- name: cashflow_recovery
+  a2a_skill: cashflow-recovery
+  description: Identify overdue invoices, draft recovery sequences, and escalate collections automatically. Settles
+    in AXM/SINC. Powered by Negotiator agents.
+  inputSchema:
+    properties:
+      escalation_threshold_days:
+        default: 30
+        type: integer
+      invoices:
+        items:
+          properties:
+            amount:
+              type: number
+            debtor_email:
+              type: string
+            debtor_name:
+              type: string
+            due_date:
+              format: date
+              type: string
+            invoice_id:
+              type: string
+          type: object
+        type: array
+    required:
+    - invoices
+    type: object
+  outputSchema:
+    properties:
+      overdue_invoices:
+        items:
+          type: object
+        type: array
+      recovery_sequences:
+        items:
+          type: object
+        type: array
+      summary:
+        type: string
+      total_recoverable:
+        type: number
+    type: object
+  price:
+    axm: 3.5
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 30
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=cashflow-recovery; schema from GET /api/a2a/quote?skill_id=cashflow-recovery
+- name: competitor_intel
+  a2a_skill: competitor-intel
+  description: Rapid competitor scans, positioning gap analysis, SWOT generation, and market landscape summaries.
+    Powered by Scout-archetype agents.
+  inputSchema:
+    properties:
+      depth:
+        description: quick=top-5 summary, detailed=full SWOT
+        enum:
+        - quick
+        - detailed
+        type: string
+      market:
+        description: Market / industry vertical
+        type: string
+      target:
+        description: Company or product to analyse
+        type: string
+    required:
+    - target
+    type: object
+  outputSchema:
+    properties:
+      competitors:
+        items:
+          type: object
+        type: array
+      summary:
+        type: string
+      swot:
+        properties:
+          opportunities:
+            items:
+              type: string
+            type: array
+          strengths:
+            items:
+              type: string
+            type: array
+          threats:
+            items:
+              type: string
+            type: array
+          weaknesses:
+            items:
+              type: string
+            type: array
+        type: object
+    type: object
+  price:
+    axm: 0.0
+    is_free: true
+    free_quota_remaining: 5
+  estimated_latency_seconds: 25
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=competitor-intel; schema from GET /api/a2a/quote?skill_id=competitor-intel
+- name: compliance_sbom
+  a2a_skill: compliance-sbom
+  description: Generate a Software Bill of Materials (SBOM), run licence compliance checks, and produce regulatory
+    filing artefacts. Powered by Auditor agents.
+  inputSchema:
+    properties:
+      artifacts:
+        description: Dependency manifests to scan
+        items:
+          type: string
+        type: array
+      format:
+        description: SBOM output format
+        enum:
+        - spdx
+        - cyclonedx
+        type: string
+      regulation:
+        description: Applicable regulation (e.g. FDA-SaMD, HIPAA, SOC2)
+        type: string
+      repository:
+        description: GitHub owner/repo
+        type: string
+    required:
+    - repository
+    type: object
+  outputSchema:
+    properties:
+      compliance_score:
+        type: number
+      filing_artefact:
+        type: string
+      licence_issues:
+        items:
+          type: object
+        type: array
+      sbom:
+        type: object
+    type: object
+  price:
+    axm: 5.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 60
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=compliance-sbom; schema from GET /api/a2a/quote?skill_id=compliance-sbom
+- name: content_blog
+  a2a_skill: content-blog
+  description: High-quality blog posts, technical articles, thought-leadership pieces, and social copy. Powered
+    by Builder + Synthesizer agents.
+  inputSchema:
+    properties:
+      audience:
+        type: string
+      length_words:
+        maximum: 5000
+        minimum: 200
+        type: integer
+      seo_keywords:
+        items:
+          type: string
+        type: array
+      tone:
+        enum:
+        - professional
+        - casual
+        - technical
+        type: string
+      topic:
+        type: string
+    required:
+    - topic
+    type: object
+  outputSchema:
+    properties:
+      body:
+        type: string
+      meta_description:
+        type: string
+      title:
+        type: string
+      word_count:
+        type: integer
+    type: object
+  price:
+    axm: 0.0
+    is_free: true
+    free_quota_remaining: 5
+  estimated_latency_seconds: 25
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=content-blog; schema from GET /api/a2a/quote?skill_id=content-blog
+- name: contract_negotiation
+  a2a_skill: contract-negotiation
+  description: Red-lining, term suggestions, risk flags, and counter-proposal drafts for vendor / partnership agreements.  Powered
+    by Negotiator agents.
+  inputSchema:
+    type: object
+    properties: {}
+    note: quote endpoint published an empty input_schema for this skill
+  price:
+    axm: 3.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 30
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=contract-negotiation; schema from GET
+    /api/a2a/quote?skill_id=contract-negotiation
+- name: deal_scoring
+  a2a_skill: deal-scoring
+  description: Score open deals by ICP fit, intent signals, and close probability. Prioritise pipeline and surface
+    next-best actions. Powered by Director agents.
+  inputSchema:
+    properties:
+      deals:
+        items:
+          properties:
+            company:
+              type: string
+            deal_id:
+              type: string
+            last_activity:
+              type: string
+            stage:
+              type: string
+            value:
+              type: number
+          type: object
+        type: array
+      target_quota:
+        type: number
+    required:
+    - deals
+    type: object
+  outputSchema:
+    properties:
+      scored_deals:
+        items:
+          properties:
+            close_probability:
+              type: number
+            deal_id:
+              type: string
+            next_action:
+              type: string
+            priority_rank:
+              type: integer
+            score:
+              type: number
+          type: object
+        type: array
+      summary:
+        type: string
+    type: object
+  price:
+    axm: 2.5
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 20
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=deal-scoring; schema from GET /api/a2a/quote?skill_id=deal-scoring
+- name: dental_billing_scrub
+  a2a_skill: dental-billing-scrub
+  description: Scrub dental claims for code accuracy, CDT compliance, missing attachments, and prior-auth flags
+    before submission. Powered by Auditor agents.
+  inputSchema:
+    properties:
+      claims:
+        items:
+          properties:
+            attachments:
+              items:
+                type: string
+              type: array
+            cdt_codes:
+              items:
+                type: string
+              type: array
+            claim_id:
+              type: string
+            payer_id:
+              type: string
+            provider_npi:
+              type: string
+            tooth_number:
+              type: string
+          type: object
+        type: array
+    required:
+    - claims
+    type: object
+  outputSchema:
+    properties:
+      clean_claims:
+        items:
+          type: object
+        type: array
+      flagged_claims:
+        items:
+          properties:
+            claim_id:
+              type: string
+            issues:
+              items:
+                type: string
+              type: array
+            suggested_fix:
+              type: string
+          type: object
+        type: array
+      summary:
+        type: string
+    type: object
+  price:
+    axm: 3.5
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 40
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=dental-billing-scrub; schema from GET
+    /api/a2a/quote?skill_id=dental-billing-scrub
+- name: healthcare_credential_check
+  a2a_skill: healthcare-credential-check
+  description: Verify provider NPI, specialty, state licences, DEA registration, and payer credentialing status.
+    Powered by Auditor agents.
+  inputSchema:
+    properties:
+      payer_ids:
+        description: Payer IDs to check credentialing for
+        items:
+          type: string
+        type: array
+      provider_name:
+        type: string
+      provider_npi:
+        description: 10-digit NPI
+        type: string
+      state:
+        description: 2-letter US state code
+        type: string
+    required:
+    - provider_npi
+    type: object
+  outputSchema:
+    properties:
+      dea_active:
+        type: boolean
+      licence_status:
+        type: string
+      npi_valid:
+        type: boolean
+      payer_credentialing:
+        items:
+          properties:
+            payer_id:
+              type: string
+            status:
+              type: string
+          type: object
+        type: array
+      specialty:
+        type: string
+    type: object
+  price:
+    axm: 4.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 45
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=healthcare-credential-check; schema
+    from GET /api/a2a/quote?skill_id=healthcare-credential-check
+- name: lead_enrichment
+  a2a_skill: lead-enrichment
+  description: Enrich company + contact records, score lead fit, and draft personalised outbound messages.  Powered
+    by Scout + Negotiator agents.
+  inputSchema:
+    properties:
+      company:
+        description: Company name or domain
+        type: string
+      enrichment_fields:
+        description: 'Fields to enrich: email, linkedin, revenue, headcount, …'
+        items:
+          type: string
+        type: array
+      segment:
+        description: Target ICP segment
+        type: string
+    required:
+    - company
+    type: object
+  outputSchema:
+    properties:
+      leads:
+        items:
+          properties:
+            company:
+              type: string
+            contact_name:
+              type: string
+            email:
+              type: string
+            fit_score:
+              maximum: 100
+              minimum: 0
+              type: number
+            outreach_draft:
+              type: string
+          type: object
+        type: array
+    type: object
+  price:
+    axm: 0.0
+    is_free: true
+    free_quota_remaining: 5
+  estimated_latency_seconds: 30
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=lead-enrichment; schema from GET /api/a2a/quote?skill_id=lead-enrichment
+- name: local_business_site_builder
+  a2a_skill: local-business-site-builder
+  description: Discover local businesses via Yelp/Google Places, enrich their profile, and generate a ready-to-deploy
+    single-page site scaffold. Flagship vertical for external agent resale. Powered by Scout + Builder agents.
+  inputSchema:
+    properties:
+      business_name:
+        description: For single-business mode
+        type: string
+      category:
+        description: Business type (e.g. dental, plumbing)
+        type: string
+      limit:
+        description: Max businesses to process
+        maximum: 50
+        minimum: 1
+        type: integer
+      location:
+        description: City, state or ZIP code
+        type: string
+    required:
+    - location
+    type: object
+  outputSchema:
+    properties:
+      businesses:
+        items:
+          properties:
+            address:
+              type: string
+            name:
+              type: string
+            phone:
+              type: string
+            site_scaffold:
+              description: HTML/Markdown site template
+              type: string
+          type: object
+        type: array
+      summary:
+        type: string
+    type: object
+  price:
+    axm: 5.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 60
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=local-business-site-builder; schema
+    from GET /api/a2a/quote?skill_id=local-business-site-builder
+- name: market_forecast
+  a2a_skill: market-forecast
+  description: Forward-looking market forecasts with confidence intervals, Monte Carlo simulations, and 'what-if'
+    scenario modelling. Powered by Synthesizer agents.
+  inputSchema:
+    properties:
+      data:
+        description: Historical data points (optional)
+        type: object
+      horizon:
+        description: Time horizon (e.g. 30d, 1y)
+        type: string
+      scenarios:
+        description: Named scenarios to model
+        items:
+          type: string
+        type: array
+      subject:
+        description: What to forecast
+        type: string
+    required:
+    - subject
+    type: object
+  outputSchema:
+    properties:
+      confidence_interval:
+        type: object
+      forecast:
+        type: object
+      scenarios:
+        items:
+          type: object
+        type: array
+      summary:
+        type: string
+    type: object
+  price:
+    axm: 0.0
+    is_free: true
+    free_quota_remaining: 5
+  estimated_latency_seconds: 35
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=market-forecast; schema from GET /api/a2a/quote?skill_id=market-forecast
+- name: outreach_sequence
+  a2a_skill: outreach-sequence
+  description: Generate multi-touch outbound sequences (email, LinkedIn, SMS) tailored to a specific ICP. Powered
+    by Negotiator + Builder agents.
+  inputSchema:
+    properties:
+      channels:
+        items:
+          enum:
+          - email
+          - linkedin
+          - sms
+          type: string
+        type: array
+      icp:
+        description: Ideal customer profile
+        type: string
+      offer:
+        description: Value proposition to communicate
+        type: string
+      touches:
+        description: Number of sequence steps
+        maximum: 10
+        minimum: 1
+        type: integer
+    required:
+    - icp
+    - offer
+    type: object
+  outputSchema:
+    properties:
+      sequence:
+        items:
+          properties:
+            body:
+              type: string
+            channel:
+              type: string
+            delay_days:
+              type: integer
+            step:
+              type: integer
+            subject:
+              type: string
+          type: object
+        type: array
+    type: object
+  price:
+    axm: 0.0
+    is_free: true
+    free_quota_remaining: 5
+  estimated_latency_seconds: 20
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=outreach-sequence; schema from GET /api/a2a/quote?skill_id=outreach-sequence
+- name: quality_audit
+  a2a_skill: quality-audit
+  description: Multi-source evaluation of agent outputs, code review, factual verification, and compliance spot-checks.
+    Powered by Auditor agents.
+  inputSchema:
+    type: object
+    properties: {}
+    note: quote endpoint published an empty input_schema for this skill
+  price:
+    axm: 2.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 20
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=quality-audit; schema from GET /api/a2a/quote?skill_id=quality-audit
+- name: toa_decision
+  a2a_skill: toa-decision
+  description: Submit a multi-option decision to the Temporal Optimization Agent (TOA). TOA runs Monte Carlo simulations,
+    scores options by utility, and returns a ranked action plan with confidence intervals. Powered by TOA + Director
+    agents.
+  inputSchema:
+    properties:
+      context:
+        description: Additional business context for the simulation
+        type: string
+      horizon_days:
+        default: 90
+        type: integer
+      options:
+        items:
+          properties:
+            description:
+              type: string
+            estimated_cost:
+              type: number
+            estimated_revenue_impact:
+              type: number
+            label:
+              type: string
+          type: object
+        type: array
+    required:
+    - options
+    type: object
+  outputSchema:
+    properties:
+      ranked_options:
+        items:
+          properties:
+            confidence:
+              type: number
+            label:
+              type: string
+            rationale:
+              type: string
+            utility_score:
+              type: number
+          type: object
+        type: array
+      recommended_action:
+        type: string
+      simulation_summary:
+        type: string
+    type: object
+  price:
+    axm: 6.0
+    is_free: false
+    free_quota_remaining: 0
+  estimated_latency_seconds: 45
+  source_operation: POST https://getsincor.com/api/a2a message/send skillId=toa-decision; schema from GET /api/a2a/quote?skill_id=toa-decision
+coverage:
+  a2a_skills: 16
+  tools_derived: 16
+  tools_with_published_input_schema: 12
+  tools_with_published_output_schema: 12

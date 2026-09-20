@@ -1,0 +1,127 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md#standard-error-format
+corroboration:
+  - 'live JSON-RPC probes of https://getsincor.com/api/a2a, 2026-09-20 (codes -32601 and -32602 observed)'
+  - 'live REST probes: POST /v1/a2a/register {} → 400 {"error":"capability_tags required","status":400}; GET /api/openapi.json → 404 {"error":"Not found","status":404}'
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md
+checked: '2026-09-19'
+derived_from: null   # no OpenAPI to derive 4xx/5xx responses from
+format: custom       # not rfc9457; two envelopes coexist
+summary: >-
+  Two error surfaces. (1) The A2A JSON-RPC dispatcher returns standard JSON-RPC error objects, but uses only
+  the generic -32601/-32602 codes — A2A's task-specific range (-32001 TaskNotFound, -32002 TaskNotCancelable,
+  -32003 PushNotificationNotSupported, -32004 UnsupportedOperation …) is not used, and unknown methods come
+  back with HTTP 404 instead of 200. Skill-validation errors are unusually helpful: the message enumerates
+  every valid skill id. (2) The REST/runtime surface documents a {status, code, message, details,
+  request_id} envelope with eleven named codes; the live 404/400 bodies observed are a thinner
+  {"error": "...", "status": N} shape, so the documented envelope is not applied uniformly.
+envelopes:
+  jsonrpc:
+    shape: '{"jsonrpc":"2.0","id":<id|null>,"error":{"code":<int>,"message":<string>}}'
+    http_status: '200 for -32602; 404 for -32601 (observed)'
+    data_field: absent
+  rest_documented:
+    shape: '{"status":"error","code":<slug>,"message":<string>,"details":{},"request_id":<correlation id>}'
+    source: docs/api/README.md "Standard error format"
+  rest_observed:
+    shape: '{"error":<string>,"status":<int>}'
+    examples: ['404 {"error":"Not found","status":404}', '400 {"error":"capability_tags required","status":400}']
+problem_types:
+  # ---- JSON-RPC (observed live) ----
+  - code: -32601
+    surface: jsonrpc
+    title: Method not found
+    http_status: 404
+    observed: true
+    example: '{"error":{"code":-32601,"message":"Method ''agent/getAuthenticatedExtendedCard'' not found"},"id":1,"jsonrpc":"2.0"}'
+    remediation: Use one of the methods /docs/a2a lists — message/send, message/stream, tasks/get, tasks/cancel, tasks/list, tasks/resubscribe (docs/api/README.md adds the four tasks/pushNotificationConfig/* methods).
+    note: Also returned for an unparseable body ("Method '' not found", id null) where JSON-RPC prescribes -32700.
+  - code: -32602
+    surface: jsonrpc
+    title: Invalid params — unknown skill
+    http_status: 200
+    observed: true
+    example: '{"error":{"code":-32602,"message":"Unknown skill ''''. Valid skills: [''lead-enrichment'', … ''axiom-payment'']"},"id":3,"jsonrpc":"2.0"}'
+    remediation: Pass the skill id as params.skillId, params.skill_id, params.skill or message.metadata.skill; the message body lists every accepted id.
+  - code: -32602
+    surface: jsonrpc
+    title: Invalid params — task not found
+    http_status: 200
+    observed: true
+    example: '{"error":{"code":-32602,"message":"Task nonexistent not found"},"id":2,"jsonrpc":"2.0"}'
+    a2a_equivalent: '-32001 TaskNotFoundError'
+    remediation: tasks/get and tasks/cancel both return this for an unknown id; treat it as A2A TaskNotFound. The task store is in-memory unless the operator configured Redis (docs/api/README.md), so ids may not survive a restart.
+  - code: -32602
+    surface: jsonrpc
+    title: Invalid params — no push config for task
+    http_status: 200
+    observed: true
+    example: '{"error":{"code":-32602,"message":"No push config for task x"},"id":11,"jsonrpc":"2.0"}'
+    a2a_equivalent: '-32003 PushNotificationNotSupportedError (the card declares pushNotifications false)'
+  # ---- REST envelope (documented in docs/api/README.md "Common error codes") ----
+  - code: invalid_request
+    surface: rest
+    title: Required fields are missing or malformed
+    http_status: 400
+  - code: auth_failed
+    surface: rest
+    title: Username/password validation failed
+    http_status: 401
+    applies_to: [POST /api/auth/login]
+  - code: invalid_token
+    surface: rest
+    title: JWT is invalid or expired
+    http_status: 401
+    applies_to: [POST /api/auth/verify-token, GET /api/auth/profile]
+  - code: invalid_payment_request
+    surface: rest
+    title: Payment request failed validation
+    http_status: 400
+    applies_to: [POST /api/payment/stripe/create-checkout, POST /api/payment/paypal/create-order]
+  - code: invalid_amount
+    surface: rest
+    title: Numeric payment value is invalid
+    http_status: 400
+    remediation: 'amount must be numeric, at least 1.00 and at most 1,000,000; currency a three-letter uppercase code; description at least three characters.'
+  - code: stripe_unavailable
+    surface: rest
+    title: Stripe subsystem is not configured
+    http_status: 503
+    note: 'The provider''s 2026-09-10 probe log records Stripe /health = not_configured; /buy says "No Stripe. No PayPal." — wallet payment on Base is the live rail.'
+  - code: stripe_error
+    surface: rest
+    title: Stripe checkout session creation failed
+    http_status: 502
+  - code: waitlist_unavailable
+    surface: rest
+    title: Waitlist manager is unavailable
+    http_status: 503
+  - code: waitlist_error
+    surface: rest
+    title: Waitlist insertion failed
+    http_status: 500
+  - code: not_found
+    surface: rest
+    title: Route or resource does not exist
+    http_status: 404
+    observed: true
+    observed_shape: '{"error":"Not found","status":404}'
+  - code: internal_error
+    surface: rest
+    title: Unhandled server exception
+    http_status: 500
+    observed: true
+    note: GET /auth/google returned 500 text/html on 2026-09-20.
+  # ---- task lifecycle outcomes (documented, not HTTP errors) ----
+  - code: execution_timeout
+    surface: task-state
+    title: Assigned task missed its deadline
+    detail: 'Assigned tasks that miss time_est_ms * 2 (capped) auto-expire with expired_reason=execution_timeout (docs/A2A_EXTERNAL_WIRE.md).'
+  - code: auction_timeout
+    surface: task-state
+    title: No bids in the auction window
+    detail: Empty auction windows expire with auction_timeout.
+http_status_notes:
+  - 'Documented HTTP statuses for the REST codes above are NOT stated in the reference; the values shown are the conventional mapping and should be read as unverified except where observed: true.'
+  - 'A2A error codes in the -32001..-32007 range were never observed; clients keyed on them will misclassify SINCOR errors as generic invalid-params.'

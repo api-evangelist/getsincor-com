@@ -1,0 +1,50 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+corroboration:
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/README.md            # "Flask app factory with JWT auth, rate limiting, security headers…"
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/SECURITY.md          # "Rate limiting and authentication hardening"
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md   # free quota 5, heartbeat TTL 60 s, task expiry rules
+  - 'live responses 2026-09-20: no X-RateLimit-*, RateLimit-*, or Retry-After header on any 200/404/405 from getsincor.com (agent card, quote, agents, /api/a2a, /health); no 429 observed across ~90 requests'
+checked: '2026-09-19'
+limit_count: 0
+summary: >-
+  No rate limit is documented anywhere: the API reference, README and SECURITY.md say the runtime HAS
+  "rate limiting" but never state a number, a window, a scope or a header, and no rate-limit header was
+  observed on any response. What IS published are QUOTAS and TIMEOUTS, which an agent must budget for but
+  which are not request-rate ceilings: a free quota of 5 calls per caller on six skills (after which the
+  skill must be paid in AXM), a 60-second heartbeat TTL for registered worker agents, per-skill
+  estimated_latency_seconds (5–60 s) on every quote, and task auto-expiry at time_est_ms × 2. An honest zero:
+  an agent's only runtime signal would be a 429, which the docs do not promise and the probe never triggered.
+limits: []
+quotas:
+  - name: Free-call quota
+    scope: per-caller (caller_id) per skill
+    limit: 5
+    metric: tasks
+    window: lifetime (no reset period stated)
+    applies_to: [lead-enrichment, competitor-intel, outreach-sequence, market-forecast, content-blog]
+    signal: 'quote fields is_free / free_quota_remaining; note "FREE — include caller_id in your tasks/send request (no txHash needed)"'
+    source: https://getsincor.com/api/a2a/quote?skill_id=lead-enrichment
+  - name: Worker heartbeat TTL
+    scope: per registered worker agent
+    limit: 1
+    metric: heartbeat
+    window: 60s
+    consequence: KYA listing expires (HEARTBEAT_TTL_MS = 60_000)
+    source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md
+  - name: Task execution deadline
+    scope: per assigned task
+    limit: 'time_est_ms × 2 (capped)'
+    consequence: expired_reason=execution_timeout
+    source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md
+  - name: Per-agent daily token budget (internal)
+    scope: per SINCOR agent
+    limit: '~12k LLM tokens/day, 200 tool calls'
+    source: https://getsincor.com/static/docs/SINCOR_whitepaper.md
+    note: A budget on the provider's own agents, published as an architecture fact; it bounds how much work a skill can do per day but is not a caller-facing limit.
+headers:
+  observed: []
+  documented: []
+  exhaustion_status: unknown   # no 429 documented or observed
+recommendation: 'Publish the limiter''s window/limit and return RateLimit-* (or Retry-After on 429) — an agent paying per task in AXM cannot otherwise plan a burst.'

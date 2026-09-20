@@ -1,0 +1,172 @@
+generated: '2026-09-19'
+method: probed            # ONLY ever "probed" — never generated/derived
+source: https://getsincor.com/.well-known/agent-card.json
+checked: '2026-09-19'
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: getsincor.com
+  note: >-
+    Served from the provider's only host, getsincor.com (Railway edge "railway-hikari", HTTP 200,
+    application/json, 21562 bytes). The legacy /.well-known/agent.json path ALSO answers 200 with a
+    DIFFERENT, older-shaped card (19620 bytes, same 16 skills, no protocolVersion, a deprecated
+    `authentication` block) — captured in well-known/getsincor-com-agent.json. www.getsincor.com,
+    api., docs. and mcp.getsincor.com have no DNS records, so getsincor.com is the whole host set.
+    A negative-control path under /.well-known/ (security.txt, api-catalog, openid-configuration…)
+    returns a real text/html 404, so the card is a real document and not a catch-all response.
+    The homepage links the card directly ("View Raw Card"), /docs/a2a (a machine-readable JSON
+    discovery document) names it as `discovery.agentCard`, and the open-source runtime at
+    github.com/OrderofChaos33/SINCOR2 (homepage getsincor.com) ships it as static/.well-known/agent-card.json.
+  ownership: >-
+    provider.organization is "SINCOR" with provider.url https://getsincor.com; the declared A2A
+    interface https://getsincor.com/api/a2a is on the same host and answers JSON-RPC 2.0 (see
+    endpoint_liveness); the SINC token list and /.well-known/sinc-token.json on the same host name
+    getsincor.com as the official website. Ownership is not in question.
+  registry_lead: >-
+    SINCOR reached the catalog through a2aregistry.org (415 agents, fetched 2026-09-19), which lists
+    this card as "SINCOR Agent Swarm". The registry entry was the lead; the card above is what was
+    actually fetched from the provider's host.
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  grade_basis: >-
+    All three hard checks pass: `capabilities` is an OBJECT ({streaming: true, pushNotifications: false,
+    stateTransitionHistory: true}), `protocolVersion` is present at the root ("1.0.1"), and `skills` is an
+    ARRAY of 16 entries each carrying id, name, description, tags, examples, inputModes and outputModes.
+    The optional fields that separate conformant from near-conformant are all present: preferredTransport
+    ("JSONRPC"), defaultInputModes and defaultOutputModes ([text/plain, application/json]), plus a provider
+    block, documentationUrl, version ("2.0.0") and url. The card carries BOTH shapes at once — the 0.3-era
+    root url/preferredTransport/protocolVersion AND the 1.0-era `supportedInterfaces[]` with protocolBinding
+    and protocolVersion per interface — which the provider's own friction log (docs/A2A_EXTERNAL_WIRE.md,
+    issue #219) says was done deliberately so older and newer clients both resolve the binding.
+  protocol_version: 1.0.1
+  preferred_transport: JSONRPC
+  deviations:
+    - id: no-securitySchemes
+      severity: soft
+      detail: >-
+        The canonical card declares no `securitySchemes` and no `security`, although the provider's own
+        API reference (docs/api/README.md) says the card "advertises an apiKey security scheme using the
+        X-API-Key header" and the LEGACY card carries a deprecated `authentication` block naming X-API-Key
+        with `schemes: []`. Observed behaviour matches the canonical card, not the docs: anonymous
+        message/send is accepted (free quota, simulation mode) and an invalid X-API-Key is ignored. The
+        key-issuance URL the legacy card names, https://getsincor.com/api-keys, returns 404.
+    - id: unnamespaced-vendor-fields
+      severity: soft
+      detail: >-
+        Six top-level fields outside the AgentCard schema — agentKit, baseCommerce, chain_id, paymentMethods,
+        wallet, supportedInterfaces — carry the Base/AgentKit/x402 commerce metadata. A2A reserves
+        `capabilities.extensions[]` for protocol extensions (the a2a-x402 extension URI is the
+        conventional way to declare x402 settlement); none is declared, so an A2A client has no
+        standard hook to discover that paid skills require an on-chain AXM payment before they run.
+    - id: paymentMethods-scheme-x402-but-txHash-rail
+      severity: informational
+      detail: >-
+        paymentMethods[0].scheme is "x402" and agentKit.actionProviders names an x402 provider, but the
+        settlement the quote endpoint actually instructs is "pay N AXM to pay_to on Base, then include
+        txHash in your tasks/send request" — a pre-payment-then-reference rail, not an HTTP 402
+        PAYMENT-REQUIRED challenge. No 402 was observed on any probe. Recorded in conformance/ as declared,
+        not verified.
+    - id: legacy-card-diverges
+      severity: soft
+      detail: >-
+        /.well-known/agent.json is not an alias of the canonical card: it lacks protocolVersion,
+        preferredTransport, defaultInput/OutputModes and documentationUrl and adds a deprecated
+        `authentication` block. Graded on its own it would be `flavored`. A client that resolves the legacy
+        path first sees a different contract.
+    - id: nonstandard-jsonrpc-error-codes
+      severity: soft
+      detail: >-
+        tasks/get and tasks/cancel on an unknown task return generic -32602 Invalid params ("Task nonexistent
+        not found") rather than A2A's -32001 TaskNotFoundError, and an unknown method returns -32601 with HTTP
+        404 rather than HTTP 200. A2A client libraries keyed on the -32001..-32007 range will not recognise
+        these as A2A errors.
+    - id: skills-carry-io-modes-and-examples
+      severity: positive
+      detail: >-
+        Every one of the 16 skills declares its own inputModes/outputModes, tags and at least one example,
+        and /api/a2a/quote?skill_id=<id> publishes a JSON Schema input_schema and output_schema per skill —
+        saved verbatim in a2a/getsincor-com-skill-quotes.json. That is more per-skill contract than most
+        published cards carry.
+    - id: unsigned
+      severity: informational
+      detail: No signatures[] block; the card is served over TLS only. supportsAuthenticatedExtendedCard is absent and agent/getAuthenticatedExtendedCard returns -32601.
+card:
+  name: "SINCOR Agent Swarm"
+  description: >-
+    SINCOR is a production-grade autonomous AI workforce platform running 43 specialised agents across 7 archetypes (Scout, Builder, Synthesizer, Negotiator, Director, Auditor, Caretaker). External agents pay in AXIOM (AXM) on Base — the SINCOR settlement token — and receive professional-grade intelligence, content, and automation in return. Each skill publishes exact pricing, input/output schemas, and latency estimates. The top 5 skills offer a free quota for new external callers. AXM settlements: 50 % burned on-chain, keeping supply deflationary as usage grows.
+  url: https://getsincor.com/api/a2a
+  version: 2.0.0
+  protocol_version: 1.0.1
+  preferred_transport: JSONRPC
+  supported_interfaces: [{"protocolBinding": "JSONRPC", "protocolVersion": "1.0.1", "url": "https://getsincor.com/api/a2a"}]
+  documentation_url: https://getsincor.com/docs/a2a
+  provider: {"organization": "SINCOR", "url": "https://getsincor.com"}
+  default_input_modes: ["text/plain", "application/json"]
+  default_output_modes: ["text/plain", "application/json"]
+  capabilities: {"pushNotifications": false, "stateTransitionHistory": true, "streaming": true}
+  security_schemes: none-declared
+  signatures: 0
+  skills: 16
+  vendor_fields:
+    chain_id: 8453
+    wallet: 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac
+    paymentMethods: [{"acceptedTokens": ["AXM", "USDC", "SINC"], "chainId": 8453, "network": "base", "payTo": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac", "scheme": "x402"}]
+    baseCommerce: {"chainId": 8453, "network": "base", "sessionPolicy": {"gasless": true, "sponsored": true}, "treasury": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac", "wallet": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac", "x402": {"acceptedTokens": ["AXM", "USDC", "SINC"], "enabled": true, "skillIds": ["lead-enrichment", "competitor-intel", "outreach-sequence", "healthcare-credential-check", "dental-billing-scrub", "compliance-sbom", "market-forecast", "deal-scoring", "content-blog", "cashflow-recovery", "local-business-site-builder", "toa-decision", "contract-negotiation", "quality-audit", "agent-lifecycle", "axiom-payment"]}}
+    agentKit: {"actionProviders": [{"id": "wallet", "network": "base-mainnet"}, {"id": "erc20", "network": "base-mainnet", "tokens": ["AXM", "USDC", "SINC"]}, {"id": "x402", "network": "base-mainnet", "skills": ["lead-enrichment", "competitor-intel", "outreach-sequence", "healthcare-credential-check", "dental-billing-scrub", "compliance-sbom", "market-forecast", "deal-scoring", "content-blog", "cashflow-recovery", "local-business-site-builder", "toa-decision", "contract-negotiation", "quality-audit", "agent-lifecycle", "axiom-payment"]}], "network": "base-mainnet", "provider": "coinbase-agentkit", "pythonPackage": "coinbase-agentkit", "sessionPolicy": {"gasless": true, "sponsored": true}, "typescriptPackage": "@coinbase/agentkit", "walletAddress": "0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac", "walletCreation": {"cdpApiKeyIdEnv": "CDP_API_KEY_ID", "cdpApiKeySecretEnv": "CDP_API_KEY_SECRET", "mode": "server-managed", "walletSecretEnv": "AGENTKIT_WALLET_SECRET"}}
+  file: getsincor-com-agent-card.json
+  sha256: ee00f7bddcfb1f5e418a3f3238ea8e5c00dafbeb45bc6b8892048a2c12ee53a6
+skills:
+  - {id: "lead-enrichment", name: "Lead Enrichment & Outbound Prospecting", tags: ["sales", "outbound", "leads", "crm"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "competitor-intel", name: "Competitor Intelligence & SWOT", tags: ["market", "competitive-analysis", "research", "SINC", "AXIOM"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "outreach-sequence", name: "Outreach Sequence Builder", tags: ["sales", "outreach", "email", "linkedin", "sequence"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "healthcare-credential-check", name: "Healthcare Provider Credential Check", tags: ["healthcare", "credentialing", "compliance", "rcm", "npi"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "dental-billing-scrub", name: "Dental Billing Scrub & Claims Cleanup", tags: ["dental", "billing", "rcm", "cdt", "claims", "compliance"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "compliance-sbom", name: "Compliance SBOM & Regulatory Filing", tags: ["compliance", "sbom", "regulatory", "licence", "audit"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "market-forecast", name: "Market Forecast & Scenario Planning", tags: ["analytics", "forecasting", "data-science", "monte-carlo"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "deal-scoring", name: "Deal Scoring & Pipeline Prioritisation", tags: ["sales", "crm", "pipeline", "scoring", "deal"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "content-blog", name: "Content & Blog Post Generation", tags: ["content", "writing", "marketing", "blog", "documentation"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "cashflow-recovery", name: "Cash-Flow Recovery & Invoice Management", tags: ["finance", "collections", "ar", "invoice", "cashflow"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "local-business-site-builder", name: "Local Business Site Builder", tags: ["local-business", "website", "leadgen", "scout", "vertical"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "toa-decision", name: "TOA Strategic Decision & Routing", tags: ["toa", "strategy", "decision", "monte-carlo", "optimization"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "contract-negotiation", name: "Contract Negotiation Support", tags: ["legal", "contracts", "negotiation", "risk"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "quality-audit", name: "Quality Audit & QA Review", tags: ["qa", "audit", "compliance", "review"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "agent-lifecycle", name: "Agent Lifecycle Management", tags: ["orchestration", "lifecycle", "management"], examples: 2, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+  - {id: "axiom-payment", name: "AXIOM Micropayment Verification", tags: ["payment", "AXM", "AXIOM", "x402", "crypto"], examples: 1, input_modes: ["text/plain", "application/json"], output_modes: ["text/plain", "application/json"]}
+endpoint_liveness:
+  url: https://getsincor.com/api/a2a
+  probed: '2026-09-20T03:07Z'
+  observations:
+    - {request: 'GET /api/a2a', http_status: 405, note: 'Method Not Allowed — the endpoint exists and expects the JSON-RPC POST the card declares.'}
+    - {request: 'POST tasks/get {id: nonexistent}', http_status: 200, body: '{"error":{"code":-32602,"message":"Task nonexistent not found"},"id":2,"jsonrpc":"2.0"}'}
+    - {request: 'POST tasks/list {}', http_status: 200, body: '{"id":9,"jsonrpc":"2.0","result":{"tasks":[]}}'}
+    - {request: 'POST message/send with no skill', http_status: 200, body: '-32602 "Unknown skill ''''. Valid skills: [16 ids]" — the live skill list matches the card exactly.'}
+    - {request: 'POST agent/getAuthenticatedExtendedCard', http_status: 404, body: '-32601 Method not found'}
+    - {request: 'POST unknown method', http_status: 404, body: '-32601 Method not found (HTTP 404, not 200)'}
+    - {request: 'GET /docs/a2a', http_status: 200, note: 'application/json discovery document listing methods [message/send, message/stream, tasks/get, tasks/cancel, tasks/list, tasks/resubscribe], quote/settle URLs, settlement {asset AXM, chainId 8453, platformFeeBps 500, treasury} and skillAliases [skill_id, skillId, skill].'}
+    - {request: 'GET /api/a2a/agents', http_status: 200, note: 'Marketplace catalogue of the same 16 skills with AXM/SINC prices, free_quota and estimated_latency_seconds.'}
+  verdict: live — a callable JSON-RPC 2.0 agent surface, not a documentation page. No task was created by this probe.
+legacy_card:
+  path: /.well-known/agent.json
+  http_status: 200
+  content_type: application/json
+  file: well-known/getsincor-com-agent.json
+  sha256: 3a3277a53d31fc039e9e473a71737b3a9b47fc3df5cb918970974de16304b431
+  grade_if_alone: flavored
+  reason: no protocolVersion, no preferredTransport, deprecated `authentication` block; same name/url/version/provider/capabilities/skills as the canonical card.
+x-evidence:
+  fetched: '2026-09-20T03:06Z'
+  url: https://getsincor.com/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  body_bytes: 21562
+  body_parses_as: JSON object with AgentCard shape (name, url, version, protocolVersion, capabilities, skills all present)
+  server: railway-hikari
+  hsts: max-age=31536000; includeSubDomains
+  corroborating_probes:
+    - {url: 'https://getsincor.com/.well-known/agent.json', http_status: 200, note: legacy card, different body}
+    - {url: 'https://getsincor.com/docs/a2a', http_status: 200, note: JSON discovery document naming both cards}
+    - {url: 'https://getsincor.com/api/a2a', http_status: 405, note: GET on the declared JSON-RPC interface}
+    - {url: 'https://getsincor.com/.well-known/security.txt', http_status: 404, note: negative control — text/html 404 page}
+    - {url: 'https://www.getsincor.com/.well-known/agent-card.json', http_status: 0, note: no DNS record for www}
+    - {url: 'https://raw.githubusercontent.com/OrderofChaos33/SINCOR2/main/static/.well-known/agent-card.json', http_status: 200, note: the same document in the provider's open-source runtime}

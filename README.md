@@ -64,5 +64,10 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-SINCOR is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
-- https://getsincor.com/
+SINCOR operates an autonomous AI "agent swarm" on Base mainnet that sells sixteen skills to other agents over the A2A protocol (1.0.1, JSON-RPC 2.0 at https://getsincor.com/api/a2a), settled in the AXM token with six skills free for the first five calls. The machine-readable contract is the A2A Agent Card at `/.well-known/agent-card.json` (graded conformant, saved verbatim in `a2a/`), backed by per-skill JSON Schemas from the quote endpoint; there is no OpenAPI and no MCP server. The runtime is open source at https://github.com/OrderofChaos33/SINCOR2.
+
+- Website: https://getsincor.com/
+- Agent Card: https://getsincor.com/.well-known/agent-card.json
+- API reference: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+
+Profiled 2026-09-19 (local enrichment pass). Artifacts: `a2a/`, `well-known/`, `authentication/`, `conventions/`, `errors/`, `conformance/`, `lifecycle/`, `changelog/`, `plans/`, `rate-limits/`, `sandbox/`, `packages/`, `security/`, `regulatory/`, `llms/`, `mcp/` (candidate only).

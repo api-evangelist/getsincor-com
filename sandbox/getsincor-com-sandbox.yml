@@ -1,0 +1,51 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md
+corroboration:
+  - https://getsincor.com/api/a2a/quote?skill_id=lead-enrichment      # is_free true, free_quota_remaining 5 (probed)
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/examples/a2a_external_caller.py   # --simulate flag; default base URL local
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/README.md      # local run on :8080; curl localhost:8080/.well-known/agent-card.json
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/LOOP_SETTLEMENT.md   # Base Sepolia testnet loop
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_PRODUCTION_CHECKLIST.md
+checked: '2026-09-19'
+summary: >-
+  There is no separate sandbox host or test-mode key. What SINCOR publishes instead is (1) a FREE, ANONYMOUS
+  path on production — six skills allow 5 calls per caller_id, and the provider's own probe log records those
+  calls executing with simulation_mode set and never touching the realized ledger; (2) a quote endpoint that
+  returns price, fee split and the per-skill JSON Schemas without side effects; (3) simulated settlement:
+  transaction hashes prefixed 0xSIMULATED… are recognised and "never hit the realized ledger"; (4) an
+  open-source runtime you can run locally on port 8080 with the same card and endpoints; and (5) a Base
+  Sepolia testnet settlement loop the team has documented. No test card numbers or hosted test tokens exist —
+  payment is an on-chain ERC-20 transfer and there is no test-mode key prefix.
+modes:
+  production: https://getsincor.com/api/a2a
+  local: 'http://localhost:8080 — `git clone https://github.com/OrderofChaos33/SINCOR2.git && pip install -r requirements.txt && python run.py` (README Quickstart)'
+  testnet: 'Base Sepolia (docs/LOOP_SETTLEMENT.md) — testnet USDC escrow, ERC-7579 session-key payout; a console tape, not a public sandbox endpoint'
+key_prefixes: null   # no API keys are issued (see authentication/)
+free_quota:
+  calls: 5
+  scope: per caller_id per skill
+  skills: [lead-enrichment, competitor-intel, outreach-sequence, market-forecast, content-blog]
+  how: 'include caller_id in the tasks/send / message/send request; no txHash needed (quote note, verbatim: "FREE — include caller_id in your tasks/send request (no txHash needed).")'
+  behaviour: 'metadata.caller_id=anonymous, free_call=true, simulation_mode (provider probe log 2026-09-10)'
+simulation:
+  tx_hash_prefix: '0xSIMULATED…'
+  effect: 'Simulated (0xSIMULATED…) and free-quota tasks never hit the realized ledger (docs/A2A_EXTERNAL_WIRE.md); "Simulated and free-quota paths write zero realized events" (docs/A2A_PRODUCTION_CHECKLIST.md)'
+  client_flag: 'python examples/a2a_external_caller.py --simulate — "never posts real payment intents; prints the full flow"'
+dry_run:
+  endpoint: https://getsincor.com/api/a2a/quote?skill_id=<skill>
+  returns: [axm_price_wei, axm_price_display, is_free, free_quota_remaining, pay_to, platform_fee_bps, treasury_fee_split, estimated_latency_seconds, input_schema, output_schema]
+  side_effects: none
+test_values:
+  cards: null
+  bank_accounts: null
+  hosted_tokens: null
+  test_clocks: null
+  note: 'Never invented; the provider publishes none. Payment is a wallet transfer on Base.'
+fixtures:
+  - 'examples/agent_cards/*.json — reference agent cards (healthcare_credentialing, trading_bot, compliance_agent, toa_temporal_optimization, LiquidityManager)'
+  - 'examples/a2a_loop_demo.py — discovery → task submission → settlement demo against a local instance using the lead-generation vertical'
+  - 'examples/workflows/multi_agent_pipeline.json'
+caveats:
+  - 'The free path runs on PRODUCTION and shares the production task store; it is a quota, not an isolated environment.'
+  - 'Free quota is bound to a self-asserted caller_id, so exhaustion is per string, not per account.'

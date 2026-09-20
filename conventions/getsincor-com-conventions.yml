@@ -1,0 +1,123 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://getsincor.com/docs/a2a (machine-readable discovery document), a2a/getsincor-com-agent-card.json,
+  https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md,
+  https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_EXTERNAL_WIRE.md,
+  https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/A2A_PRODUCTION_CHECKLIST.md,
+  https://github.com/OrderofChaos33/SINCOR2/blob/main/examples/a2a_external_caller.py, and live JSON-RPC
+  probes of https://getsincor.com/api/a2a on 2026-09-20 (no task was created).
+docs: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+checked: '2026-09-19'
+derived_from: null   # no OpenAPI
+description: >-
+  How the SINCOR A2A surface behaves across every call: JSON-RPC 2.0 over a single POST endpoint, anonymous
+  free calls then payment-as-authorization in AXM, a genuine quote-as-dry-run, no idempotency on the task
+  surface, cancel-only reversibility with no stated window, SSE streaming, generic JSON-RPC error codes and
+  no rate-limit signal. Cross-links: authentication/, errors/, lifecycle/, rate-limits/, sandbox/, plans/.
+base_url: https://getsincor.com/api/a2a
+api_style: 'A2A 1.0.1 over JSON-RPC 2.0 (POST /api/a2a) + SSE; a small JSON discovery/quote/catalogue REST layer; legacy REST task routes retained'
+auth_style:
+  model: anonymous free quota → AXM payment referenced by txHash (paid skills); documented X-API-Key not enforced; JWT bearer on operator /api/auth routes
+  see: authentication/getsincor-com-authentication.yml
+request_shape:
+  envelope: '{"jsonrpc":"2.0","id":<any>,"method":"message/send","params":{"message":{"role":"user","parts":[{"kind":"text","text":"..."}],"messageId":"..."},"skillId":"<skill>"}}'
+  skill_selection: 'params.skillId | params.skill_id | params.skill | message.metadata.skill (skillAliases published in /docs/a2a); omitted skill → -32602 listing every valid id'
+  caller_identity: 'metadata.caller_id (self-asserted) binds free-quota usage; paid tasks add txHash of the AXM transfer'
+  content_types: [text/plain, application/json]   # defaultInputModes / defaultOutputModes
+methods:
+  published_in_docs_a2a: [message/send, message/stream, tasks/get, tasks/cancel, tasks/list, tasks/resubscribe]
+  additional_in_api_reference: [tasks/pushNotificationConfig/set, tasks/pushNotificationConfig/get, tasks/pushNotificationConfig/delete, tasks/pushNotificationConfig/list]
+  not_implemented: [agent/getAuthenticatedExtendedCard]
+  legacy_rest: ['POST /api/a2a/tasks/send', 'GET /api/a2a/tasks/<task_id>', 'POST /api/a2a/tasks/cancel']
+  discovery_rest: ['GET /.well-known/agent-card.json', 'GET /.well-known/agent.json', 'GET /docs/a2a', 'GET /api/a2a/agents', 'GET|POST /api/a2a/quote', 'POST /api/a2a/settle']
+dry_run:
+  supported: true
+  mechanism: quote endpoint
+  detail: >-
+    GET/POST /api/a2a/quote?skill_id=<skill> returns, WITHOUT creating a task or moving funds, the exact price
+    (axm_price_wei / axm_price_display), pay_to, platform fee split, estimated_latency_seconds, whether the call
+    is free and how much free quota remains, and the skill's input_schema and output_schema. That is a true
+    preflight for an agent: it can validate its input against the schema and know the cost before committing.
+    The provider's reference client also ships a --simulate flag, and anonymous free calls execute in
+    simulation_mode per the provider's own probe log (a run-through that never touches the realized ledger).
+  evidence: https://getsincor.com/api/a2a/quote?skill_id=toa-decision
+idempotency:
+  supported: false
+  coverage: none
+  header: null
+  scope: []
+  retention: null
+  detail: >-
+    No Idempotency-Key header, no messageId de-duplication and no replay window is documented for message/send
+    or the legacy tasks/send. Re-sending a paid task request that may already have been accepted creates a
+    second task; whether the same txHash can be presented twice is not stated. The A2A message.messageId field
+    exists in the envelope but no de-duplication behaviour is documented for it.
+  what_exists_instead:
+    - mechanism: idempotency_key on the HUMAN subscription checkout
+      surface: 'POST /api/platform/checkout (docs/A2A_PRODUCTION_CHECKLIST.md: "idempotent by idempotency_key (or wallet+plan+hour), claims a verifying lock before RPC")'
+      effect: Protects a person buying a plan from double-charging; it is not on the A2A task surface an agent calls, so it does not change the verdict above.
+    - mechanism: on-chain transfer is single-use at the token contract
+      surface: AXM ERC-20 transfer to the treasury
+      effect: A given transaction settles once, but nothing stops a client re-submitting the same task with the same txHash or paying twice for the same logical request.
+  recommendation: 'Honour message.messageId (or an Idempotency-Key) for at least the quoted estimated_latency window and return the original task for a replay.'
+reversibility:
+  grade: documented
+  coverage: partial
+  detail: >-
+    tasks/cancel exists (listed in /docs/a2a and the API reference; live probe on an unknown id returned -32602
+    "Task nonexistent not found", so the method is wired) — that is the reversal path for a submitted task. NO
+    WINDOW is stated: the docs do not say whether a task can be cancelled after it is assigned, running or
+    completed, nor whether a paid task's AXM is refunded on cancel. No refund, void or reversal operation exists
+    for the on-chain payment; the checkout doc says fills "auto-expire past expires_at" and the Base Sepolia loop
+    tape describes escrow refund on worker timeout, but neither is a mainnet refund commitment for A2A tasks.
+    Graded documented (reversal path, no stated window), not verified.
+  write_surfaces:
+    - operation: message/send (creates a task; may be paid)
+      reversal: tasks/cancel
+      window: not stated
+      refund_on_cancel: not stated
+      docs: https://getsincor.com/docs/a2a
+    - operation: AXM payment to treasury (pay_to)
+      reversal: none documented
+      window: n/a
+      docs: https://getsincor.com/api/a2a/quote?skill_id=toa-decision
+    - operation: /v1/a2a/register (worker listing)
+      reversal: 'POST /v1/kya/revoke (docs/KYA_SPEC.md) / POST /v1/agents/{agent_id}/revoke (docs/UNDERWRITING.md)'
+      window: not stated
+      docs: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/KYA_SPEC.md
+  timeouts_as_implicit_reversal:
+    - 'Assigned tasks that miss time_est_ms × 2 auto-expire with expired_reason=execution_timeout'
+    - 'Empty auction windows expire with auction_timeout'
+pagination:
+  style: none-documented
+  detail: 'tasks/list returned {"tasks": []} with no cursor/limit fields; no pagination parameters are documented for any list surface (tasks/list, /api/a2a/agents, /v1/kya/directory).'
+field_expansion: none
+sparse_fields: none
+metadata:
+  request: 'message.metadata {skill, payment{txHash…}, caller_id}'
+  response: 'result.metadata (documented as {} in the success envelope); task metadata carries caller_id, free_call, simulation_mode per the probe log'
+request_tracing:
+  header: null
+  body_field: request_id (REST error envelope only, per docs/api/README.md)
+  edge_header_observed: x-railway-request-id (set by the Railway edge on every response — infrastructure, not an API contract)
+versioning:
+  scheme: agent-card version 2.0.0 + A2A protocolVersion 1.0.1; unversioned /api/a2a path; /v1 prefix on the worker fabric
+  see: lifecycle/getsincor-com-lifecycle.yml
+error_envelope:
+  jsonrpc: '{"jsonrpc":"2.0","id":…,"error":{"code":-32601|-32602,"message":"…"}} — generic codes only; -32601 arrives with HTTP 404'
+  rest: '{"status":"error","code":"<slug>","message":"…","details":{},"request_id":"…"} documented; {"error":"…","status":N} observed'
+  see: errors/getsincor-com-problem-types.yml
+streaming:
+  message_stream: 'SSE (text/event-stream) for message/stream and tasks/resubscribe; capabilities.streaming true'
+  worker_stream: 'GET /v1/a2a/stream?tags=… — SSE task.created events for registered workers (200 text/event-stream observed)'
+  push_notifications: 'capabilities.pushNotifications false; tasks/pushNotificationConfig/get on an unknown task returns -32602 "No push config for task"'
+rate_limit_signaling:
+  headers: none observed or documented
+  see: rate-limits/getsincor-com-rate-limits.yml
+payment_semantics:
+  quote_then_pay_then_send: 'quote → transfer AXM to pay_to on Base (chain 8453) → message/send with txHash → tasks/get until completed'
+  platform_fee_bps: 500
+  free_path: 'six skills allow 5 free calls per caller_id with no txHash'
+  settle_endpoint: 'POST /api/a2a/settle (named in /docs/a2a; GET → 405; request shape not documented)'
+cors: not documented

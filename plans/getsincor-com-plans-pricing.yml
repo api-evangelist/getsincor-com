@@ -1,0 +1,91 @@
+generated: '2026-09-19'
+method: searched
+source: https://getsincor.com/buy
+corroboration:
+  - https://getsincor.com/signup                                  # "Starting at $297/month for 8 agents … Flat pricing — no per-agent fees … Cancel anytime"
+  - https://getsincor.com/api/a2a/agents                          # per-skill AXM / SINC prices, free_quota, latency (probed)
+  - https://getsincor.com/api/a2a/quote?skill_id=<skill>          # 16 live quotes with platform_fee_bps 500 (probed; saved in a2a/getsincor-com-skill-quotes.json)
+  - https://getsincor.com/docs/a2a                                # settlement {asset AXM, platformFeeBps 500}
+  - https://getsincor.com/static/docs/SINCOR_whitepaper.md        # §4.1 billing model; SINC $0.15 official price
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/WEBSITE_PRICING_COPY.md   # DRAFT tier table (Starter $297 / Professional $997 / Scale $2,997) — not on the live site
+  - 'https://getsincor.com/pricing → 404 (the /buy page links to it; probed 2026-09-20)'
+checked: '2026-09-19'
+summary: >-
+  Two price lists. (A) HUMAN SUBSCRIPTIONS paid on Base: the live /buy checkout says "Starter is $297 USDC on
+  Base"; /signup says "Starting at $297/month for 8 agents", flat pricing, cancel anytime. Professional and
+  Enterprise tiers are named on live pages (/signup?plan=professional, /buy?plan=enterprise) but NO live page
+  states their price — the only figures ($997 Professional, $2,997 "Scale") are in a draft copy document in the
+  repository, recorded below as unconfirmed. "No Stripe. No PayPal." — payment is a wallet transfer to the
+  treasury, verified on-chain. (B) MACHINE PAY-PER-TASK over A2A: each of the 16 skills has a fixed AXM price
+  (1.0–6.0 AXM; SINC-denominated equivalents 1–5 SINC are also listed in the catalogue) settled to the treasury
+  with a 500 bps platform fee; six skills carry a free quota of 5 calls for anonymous callers. Prices are
+  read live from the provider's own endpoints and change only when the operator changes them.
+plan_count: 3
+api_plan_count: 16
+currency: USD
+settlement_currency: [USDC, AXM, SINC]   # on Base mainnet, chainId 8453; treasury 0x09E2891432827D8835d2E9b83B25e2a5ba9612Ac
+free_tier:
+  present: true
+  detail: 'free_quota 5 calls per caller on lead-enrichment, competitor-intel, outreach-sequence, market-forecast, content-blog and local-business-site-builder is 0 — see per-skill rows. Free calls run in simulation_mode per the provider''s own probe log.'
+plans:
+  - id: starter
+    name: Starter
+    price: 297
+    currency: USD
+    billing_period: month
+    settles_in: USDC on Base (list price 1:1) when AXM has no live DEX pair
+    included: ['8 agents (signup copy); draft repo copy says 10', '24/7 autonomous execution', 'Flat pricing — no per-agent fees', 'Cancel anytime — no contracts']
+    source: https://getsincor.com/buy
+    confirmed_on_live_site: true
+  - id: professional
+    name: Professional
+    price: 997
+    currency: USD
+    billing_period: month
+    included: ['25 agents (draft copy)']
+    source: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/WEBSITE_PRICING_COPY.md
+    confirmed_on_live_site: false
+    note: 'Tier exists on the live site (/signup?plan=professional) but its price appears only in the repository''s draft pricing copy.'
+  - id: enterprise
+    name: Enterprise
+    price: null
+    currency: USD
+    billing_period: month
+    source: https://getsincor.com/buy?plan=enterprise
+    confirmed_on_live_site: true
+    note: 'Named on the live checkout with no published price; the draft copy''s third tier is "Scale" at $2,997 / up to 100 agents, which may or may not be the same tier.'
+api_pricing:
+  model: pay-per-task, quoted per skill in AXM, settled on Base to the treasury before the task runs
+  platform_fee_bps: 500
+  quote_endpoint: https://getsincor.com/api/a2a/quote?skill_id=<skill>
+  catalogue_endpoint: https://getsincor.com/api/a2a/agents
+  skills:   # from /api/a2a/agents + live quotes, 2026-09-20
+    - {id: lead-enrichment,             axm: 2.5, sinc: 3, free_quota: 5, latency_s: 30}
+    - {id: competitor-intel,            axm: 2.0, sinc: 2, free_quota: 5, latency_s: 25}
+    - {id: outreach-sequence,           axm: 3.0, sinc: 3, free_quota: 5, latency_s: 20}
+    - {id: healthcare-credential-check, axm: 4.0, sinc: 4, free_quota: 0, latency_s: 45}
+    - {id: dental-billing-scrub,        axm: 3.5, sinc: 4, free_quota: 0, latency_s: 40}
+    - {id: compliance-sbom,             axm: 5.0, sinc: 5, free_quota: 0, latency_s: 60}
+    - {id: market-forecast,             axm: 4.0, sinc: 4, free_quota: 5, latency_s: 35}
+    - {id: deal-scoring,                axm: 2.5, sinc: 3, free_quota: 0, latency_s: 20}
+    - {id: content-blog,                axm: 2.0, sinc: 2, free_quota: 5, latency_s: 25}
+    - {id: cashflow-recovery,           axm: 3.5, sinc: null, free_quota: 0, latency_s: 30}
+    - {id: local-business-site-builder, axm: 5.0, sinc: null, free_quota: 0, latency_s: 60}
+    - {id: toa-decision,                axm: 6.0, sinc: null, free_quota: 0, latency_s: 45}
+    - {id: contract-negotiation,        axm: 3.0, sinc: null, free_quota: 0, latency_s: 30}
+    - {id: quality-audit,               axm: 2.0, sinc: null, free_quota: 0, latency_s: 20}
+    - {id: agent-lifecycle,             axm: 1.0, sinc: 1, free_quota: 0, latency_s: 10}
+    - {id: axiom-payment,               axm: 1.0, sinc: null, free_quota: 0, latency_s: 5}
+  note: >-
+    sinc values come from the /api/a2a/agents catalogue (sinc_price_per_task) where present; the live quote
+    sets sinc_amount 0 and primary_token AXIOM for every skill, i.e. AXM is the only accepted settlement
+    today ("AXM-only" in the quote note). The repository's config/x402_pricing.yaml prices other resources in
+    SINC (agent_task 1.0, bi_report_preview 5.0, hook_status 0.1, content_draft 2.0) and
+    healthcare-credential-check in USDC 5.0 — configuration, not a published price list, so not credited.
+token_prices:
+  sinc_official_usd: 0.15
+  source: https://getsincor.com/api/price/official
+  note: 'Provider-declared "official price / hard floor" ($150M FDV / 1B tokens), not a market quote. Recorded because subscription USD prices convert through it.'
+overage: null
+volume_discounts: null
+trial: 'No trial for subscriptions; the machine surface has the 5-call free quota on six skills.'

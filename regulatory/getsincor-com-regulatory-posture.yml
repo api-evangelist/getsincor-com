@@ -1,0 +1,45 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://getsincor.com/static/docs/SINCOR_whitepaper.md
+checked: '2026-09-19'
+signals: {}
+searched:
+  harvested_artifacts:
+    - 'well-known/ — no security.txt (404), so no Policy: line to follow'
+    - 'security/ — no trust center; SECURITY.md carries no subprocessor list, DPA or SBOM link'
+    - 'lifecycle/ — no support period stated anywhere (SECURITY.md supports "main" only)'
+    - 'conformance/ — no compliance certifications published'
+  conventional_paths_probed:   # all on getsincor.com, 2026-09-20, browser UA
+    - {path: /accessibility, status: 404}
+    - {path: /accessibility/vpat, status: 404}
+    - {path: /legal/subprocessors, status: 404}
+    - {path: /legal/dpa, status: 404}
+    - {path: /privacy/requests, status: 404}
+    - {path: /transparency, status: 404}
+    - {path: /security/sbom, status: 404}
+    - {path: /docs/data-residency, status: 404}
+    - {path: /ai/transparency, status: 404}
+    - {path: /legal/report-content, status: 404}
+    - {path: /privacy, status: 404, note: 'linked as "Privacy Policy" from /signup and /verticals/webbuilder — a dead legal link'}
+    - {path: /terms, status: 404, note: 'linked as "Terms of Service" from /signup — a dead legal link'}
+  docs_site: 'No docs host; the only documentation is /docs/a2a (JSON) and the GitHub repository, neither of which carries residency, export/portability or age signals.'
+considered_and_rejected:
+  - signal: ai_transparency
+    seen_at: https://getsincor.com/static/docs/SINCOR_whitepaper.md
+    quote: 'Healthcare and regulated vertical outputs are labeled decision-support only'
+    why_not_credited: >-
+      One sentence in a whitepaper §4.3 "Safety" list, scoped to regulated-vertical outputs, with no
+      published disclosure page, no labelling example and no statement that users are told they are
+      interacting with AI. It is the WORD, not the substance the regime asks for; recorded here so a later
+      pass can re-check if a disclosure page appears.
+  - signal: sbom
+    seen_at: https://getsincor.com/.well-known/agent-card.json
+    quote: 'skill compliance-sbom — "Generate a Software Bill of Materials (SBOM)…"'
+    why_not_credited: A product that GENERATES SBOMs for customers; SINCOR publishes no SBOM of its own build. Never derived.
+  - signal: data_subject_request / subprocessors
+    seen_at: /privacy (404)
+    why_not_credited: The privacy policy the site links to does not exist, so no DSR channel or subprocessor list is published.
+note: >-
+  An empty signals map is the measurement: SINCOR publishes none of the fourteen horizontal-regulatory
+  signals, and its two legal pages (/terms, /privacy) are dead links from its own signup flow.

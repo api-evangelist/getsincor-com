@@ -1,0 +1,66 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/OrderofChaos33/SINCOR2/blob/main/ROADMAP.md
+corroboration:
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/CHANGELOG.md
+  - https://github.com/OrderofChaos33/SINCOR2/blob/main/SECURITY.md   # "Supported Versions" table
+  - https://getsincor.com/.well-known/agent-card.json                   # version 2.0.0, protocolVersion 1.0.1
+  - https://getsincor.com/.well-known/agent.json                        # legacy card kept live, no sunset signal
+  - https://getsincor.com/static/docs/SINCOR_whitepaper.md              # "Version 1.2 — July 2026"
+  - https://getsincor.com/health                                        # {"status":"healthy","service":"SINCOR2 MVP","entry":"railway_start"}
+  - 'https://getsincor.com/status → 404; /changelog → 404 (probed 2026-09-20)'
+checked: '2026-09-19'
+derived_from: null   # no OpenAPI to derive deprecated operations from
+versioning:
+  scheme: agent-card-version + protocol-version
+  current: '2.0.0'
+  protocol_version: '1.0.1'
+  docs: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+  detail: >-
+    The A2A interface is unversioned in the path (/api/a2a); the card's `version` (2.0.0) and the A2A
+    `protocolVersion` (1.0.1) are the only version signals. The worker-side inbound fabric is under /v1
+    (/v1/a2a/register, /v1/kya/*, /v1/quest). The whitepaper is versioned separately (1.2, July 2026) and the
+    token-metadata surface carries a canon_lock_version (2026-09-19.1). The runtime's CHANGELOG has no
+    numbered releases — an "Unreleased" section and one dated entry (2026-06-07); SECURITY.md's supported
+    version is "main".
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  observed: >-
+    The pre-0.3 card path /.well-known/agent.json is kept live as a "legacy Agent Card alias" (docs/api/README.md)
+    alongside the canonical card, and legacy REST routes (POST /api/a2a/tasks/send, GET /api/a2a/tasks/<id>,
+    POST /api/a2a/tasks/cancel) remain alongside JSON-RPC — labelled "Legacy" in the reference with no
+    removal date, no Sunset/Deprecation header and no policy. The token layer has a retired v1 contract the
+    docs say "DO NOT BUY", which is a deprecation communicated in prose only.
+  deprecated_operations: []
+sla:
+  url: null
+  uptime_target: null
+  published: false
+  note: >-
+    No SLA. The only time-bound commitments published are operational: heartbeat TTL 60 s for registered
+    worker agents, assigned tasks auto-expire at time_est_ms × 2 (capped), quoted estimated_latency_seconds
+    per skill (5–60 s), and a 48-hour acknowledgement / 7-day initial assessment for security reports (SECURITY.md).
+status_page:
+  url: null
+  published: false
+  health_endpoint: https://getsincor.com/health
+  note: >-
+    No status page (/status 404). /health returns {"status":"healthy","service":"SINCOR2 MVP","entry":"railway_start"}
+    and /api/health returns the same — a liveness probe, not a status page, so no StatusPage pointer is emitted.
+changelog:
+  url: https://github.com/OrderofChaos33/SINCOR2/blob/main/CHANGELOG.md
+  format: Keep a Changelog 1.0.0
+  artifact: changelog/getsincor-com-changelog.yml
+roadmap:
+  url: https://github.com/OrderofChaos33/SINCOR2/blob/main/ROADMAP.md
+  completed: ['v3 Launch: Core Flask runtime and Base token integration shipped', 'A2A Foundation: Google A2A v1.0.1 endpoints and Agent Card support enabled']
+  in_progress: ['Marketplace Beta: capability-based matching and reputation-driven routing hardening', 'Production Operations: deployment, observability, and resilience checklist rollout', 'TOA Integration: forecast → simulate → collapse pipeline (core module complete, vertical wiring in progress)']
+  next: ['TOA Vertical Wiring', 'TOA GPU Acceleration', 'DAE Expansion', 'Vertical Pack Growth', 'Settlement Automation']
+  whitepaper_roadmap: ['Token list certification (Blockscout, Superchain)', 'Morpho Blue SINC/USDC market activation with floor oracle', 'Shared liquidity hooks and additional Base CLMM depth', 'x402 micropayments for API resources', 'Real agent telemetry dashboard', 'WebBuilder studio (admin-gated)']
+  launch: 'Genesis launch announced for 2026-09-26 (sincor-genesis-gate repository; homepage "Deploy" / signup copy).'
+support_lifetime:
+  stated_period: null
+  note: 'SECURITY.md supports "main" only; no product support period is stated anywhere.'
