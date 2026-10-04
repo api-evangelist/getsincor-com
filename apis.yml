@@ -13,6 +13,21 @@ description: >-
   JSON Schemas from the quote endpoint; there is no OpenAPI, no MCP server and no rate-limit signal. The
   runtime is open source (MIT) at github.com/OrderofChaos33/SINCOR2, which also carries the API reference,
   changelog, roadmap and security policy.
+deliveryModel:
+  model: saas
+  license_evidence:
+    not_product:
+    - orderofchaos33/sincor2
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: low
+  source:
+  - pricing
+  - repository-not-product
+  generated: '2026-09-25'
+  method: derived
 image: https://getsincor.com/static/sincor_og.jpg
 url: https://raw.githubusercontent.com/api-evangelist/getsincor-com/refs/heads/main/apis.yml
 x-type: company
@@ -26,6 +41,20 @@ specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
+- Company
+- AI Agents
+- A2A
+- Agentic Commerce
+- Agentic Payments
+- x402
+- Base
+- Crypto
+- Lead Generation
+- Healthcare
+- Compliance
+- Market Intelligence
+- Agent-Native
+tags_raw:
 - Company
 - AI Agents
 - A2A
@@ -155,3 +184,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 23
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://getsincor.com/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "1.0.1"
+  control: 404
