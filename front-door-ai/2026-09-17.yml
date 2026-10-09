@@ -1,0 +1,36 @@
+# Front Door AI Index — getsincor-com — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: getsincor-com
+  lexicon_version: '1.0'
+  probed_at: '2026-09-25'
+  host: getsincor.com
+  final_host: getsincor.com
+  ownership: own
+  owner: getsincor-com
+  shares_host_with: null
+  inherited_from: null
+  alias_of: null
+  verdict: scored
+  score: 10
+  band: 4
+  band_label: moderate
+  host_score: 10
+  density: 4.74
+  words: 2110
+  tiers:
+    agentic: 7
+    core: 0
+    model: 3
+  ambiguous: 79
+  top_terms:
+    agent: 73
+    intelligence: 4
+    chatbot: 3
+    embedding: 3
+    Claude: 2
+    ChatGPT: 1
+    automation: 1
+    predictive: 1
+    prompts: 1
