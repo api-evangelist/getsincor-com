@@ -64,10 +64,108 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-SINCOR operates an autonomous AI "agent swarm" on Base mainnet that sells sixteen skills to other agents over the A2A protocol (1.0.1, JSON-RPC 2.0 at https://getsincor.com/api/a2a), settled in the AXM token with six skills free for the first five calls. The machine-readable contract is the A2A Agent Card at `/.well-known/agent-card.json` (graded conformant, saved verbatim in `a2a/`), backed by per-skill JSON Schemas from the quote endpoint; there is no OpenAPI and no MCP server. The runtime is open source at https://github.com/OrderofChaos33/SINCOR2.
+SINCOR operates an autonomous AI "agent swarm" on Base mainnet that sells sixteen skills — lead enrichment, competitor intelligence, outbound sequences, healthcare credential checks, dental billing scrubs, compliance SBOMs, market forecasts, deal scoring, content, cash-flow recovery, local-business site building, TOA strategic decisions, contract negotiation, quality audits, agent lifecycle and AXIOM payment verification — to other agents over the A2A protocol (1.0.1, JSON-RPC 2.0 at https://getsincor.com/api/a2a). Payment is on-chain: paid skills are quoted in the AXM token and settled to a treasury on Base with a 500 bps platform fee, six skills are free for the first five calls per caller, and human subscriptions (Starter $297/month) are paid in USDC on Base. The machine-readable contract is the A2A Agent Card at /.well-known/agent-card.json (graded conformant), backed by per-skill JSON Schemas from the quote endpoint; there is no OpenAPI, no MCP server and no rate-limit signal. The runtime is open source (MIT) at github.com/OrderofChaos33/SINCOR2, which also carries the API reference, changelog, roadmap and security policy.
 
-- Website: https://getsincor.com/
-- Agent Card: https://getsincor.com/.well-known/agent-card.json
-- API reference: https://github.com/OrderofChaos33/SINCOR2/blob/main/docs/api/README.md
+**Areas:** Company · AI Agents · A2A · Agentic Commerce · Agentic Payments · x402 · Base · Cryptocurrency · Lead Generation · Healthcare · Compliance · Market Intelligence
 
-Profiled 2026-09-19 (local enrichment pass). Artifacts: `a2a/`, `well-known/`, `authentication/`, `conventions/`, `errors/`, `conformance/`, `lifecycle/`, `changelog/`, `plans/`, `rate-limits/`, `sandbox/`, `packages/`, `security/`, `regulatory/`, `llms/`, `mcp/` (candidate only).
+## SINCOR on APIs.io
+
+Everything profiled for SINCOR is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/getsincor-com/](https://apis.io/providers/getsincor-com/)** — or go straight to one of the APIs or properties below.
+
+### APIs (1)
+
+- [SINCOR Agent Swarm A2A API](https://apis.io/apis/getsincor-com/sincor-agent-swarm-a2a-api/) — A2A 1.0.1 agent surface over JSON-RPC 2.0 exposing sixteen skills. Discover via the agent card, quote a skill (price, fee split, free-quota state,…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [getsincor-com (candidate)](https://apis.io/servers/getsincor-com/getsincor-com-candidate/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Getsincor Com Authentication](https://apis.io/security/getsincor-com/getsincor-com-authentication/)
+- [Getsincor Com Domain Security](https://apis.io/security/getsincor-com/getsincor-com-domain-security/)
+- [Getsincor Com Vulnerability Disclosure](https://apis.io/security/getsincor-com/getsincor-com-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Getsincor Com Plans Pricing](https://apis.io/plans/getsincor-com/getsincor-com-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Getsincor Com Rate Limits](https://apis.io/rate-limits/getsincor-com/getsincor-com-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://getsincor.com/)
+- [Pricing](https://getsincor.com/buy)
+- [Sign up](https://getsincor.com/signup)
+- [Changelog](https://github.com/OrderofChaos33/SINCOR2/blob/main/CHANGELOG.md)
+- [Security](https://github.com/OrderofChaos33/SINCOR2/blob/main/SECURITY.md)
+- [GitHub](https://github.com/OrderofChaos33)
+
+## API Evangelist rating
+
+**Kin Score 37.4** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 0.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 36.8 |
+| Developer ergonomics | 59.5 |
+| Access clarity | 55.3 |
+
+**Agent readiness 13.7** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | conformant |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 18.0** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/getsincor-com/](https://apis.io/providers/getsincor-com/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for SINCOR: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/getsincor-com/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
